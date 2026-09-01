@@ -703,6 +703,12 @@ export interface ImageState {
   toggleRulers: () => void;
   toggleGrid: () => void;
   setRulerInterval: (interval: number) => void;
+
+  // Layer Selection State
+  selectedOverlayId: string | null;
+  isMainImageSelected: boolean;
+  setSelectedOverlayId: (id: string | null) => void;
+  setIsMainImageSelected: (selected: boolean) => void;
 }
 
 export const useImageStore = create<ImageState>()(
@@ -1940,5 +1946,15 @@ export const useImageStore = create<ImageState>()(
     toggleGrid: () => set((state) => ({ showGrid: !state.showGrid })),
     setRulerInterval: (interval) =>
       set({ rulerInterval: Math.max(1, Math.round(Number.isFinite(interval) ? interval : 100)) }),
+
+    selectedOverlayId: null,
+    isMainImageSelected: false,
+    setSelectedOverlayId: (id: string | null) =>
+      set({ selectedOverlayId: id, isMainImageSelected: id === null }),
+    setIsMainImageSelected: (selected: boolean) =>
+      set((state) => ({
+        isMainImageSelected: selected,
+        selectedOverlayId: selected ? null : state.selectedOverlayId,
+      })),
   }))
 );
