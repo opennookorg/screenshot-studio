@@ -327,9 +327,34 @@ function PerspectiveSliders() {
 }
 
 function ZoomSlider() {
-  const imageScale = useImageStore((s) => s.imageScale);
-  const setImageScale = useImageStore((s) => s.setImageScale);
+const {
+    imageScale,
+    setImageScale,
+    imageOverlays,
+    updateImageOverlay,
+    selectedOverlayId,
+  } = useImageStore();
 
+  const selectedOverlay = selectedOverlayId
+    ? imageOverlays.find((o) => o.id === selectedOverlayId)
+    : null;
+   // If a second image / overlay is selected, zoom/scale its size:
+  if (selectedOverlay) {
+    return (
+      <Slider
+        value={[selectedOverlay.size]}
+        onValueChange={(value) =>
+          updateImageOverlay(selectedOverlay.id, { size: value[0] })
+        }
+        min={20}
+        max={1200}
+        step={5}
+        label="Size / Zoom (Selected Overlay)"
+        valueDisplay={`${selectedOverlay.size}px`}
+      />
+    );
+  }
+  // Otherwise, scale the main base image:
   return (
     <Slider
       value={[imageScale / 100]}
@@ -342,6 +367,7 @@ function ZoomSlider() {
     />
   );
 }
+
 
 function TransformControls() {
   const perspective3D = useImageStore((s) => s.perspective3D);

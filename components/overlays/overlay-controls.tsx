@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { useImageStore } from '@/lib/store'
@@ -14,9 +13,9 @@ export function OverlayControls() {
     updateImageOverlay,
     removeImageOverlay,
     clearImageOverlays,
+    selectedOverlayId,
+    setSelectedOverlayId,
   } = useImageStore()
-
-  const [selectedOverlayId, setSelectedOverlayId] = useState<string | null>(null)
 
   const selectedOverlay = imageOverlays.find(
     (overlay) => overlay.id === selectedOverlayId
