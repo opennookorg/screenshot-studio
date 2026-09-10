@@ -69,6 +69,12 @@ export interface TextOverlay {
   textShadow: TextShadow;
 }
 
+export interface ImageOverlayTilt {
+  perspective: number;
+  rotateX: number;
+  rotateY: number;
+}
+
 export interface ImageOverlay {
   id: string;
   src: string;
@@ -82,6 +88,9 @@ export interface ImageOverlay {
   isVisible: boolean;
   isCustom?: boolean; // Whether it's a custom uploaded overlay
   layer?: 'front' | 'back'; // Render in front of or behind the main image
+  tilt?: ImageOverlayTilt;
+  shadow?: ImageShadow;
+  radius?: number;
 }
 
 export interface BlurRegion {
