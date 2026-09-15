@@ -84,6 +84,10 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
     showRulers,
     showGrid,
     rulerInterval,
+    selectedOverlayId,
+    setSelectedOverlayId,
+    isMainImageSelected,
+    setIsMainImageSelected,
   } = useImageStore();
 
   // Split overlays into front (default) and back (behind main image)
@@ -121,10 +125,6 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
     null
   );
 
-  const [selectedOverlayId, setSelectedOverlayId] = useState<string | null>(
-    null
-  );
-  const [isMainImageSelected, setIsMainImageSelected] = useState(false);
   const [selectedTextId, setSelectedTextId] = useState<string | null>(null);
   const [isDraggingMainImage, setIsDraggingMainImage] = useState(false);
   const [selectedBlurId, setSelectedBlurId] = useState<string | null>(null);

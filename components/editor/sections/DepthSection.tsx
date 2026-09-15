@@ -79,6 +79,9 @@ export function DepthSection() {
     textOverlays,
     annotations,
     blurRegions,
+    selectedOverlayId,
+    setSelectedOverlayId,
+    setIsMainImageSelected,
     addImageOverlay,
     updateImageOverlay,
     removeImageOverlay,
@@ -90,7 +93,11 @@ export function DepthSection() {
     removeBlurRegion,
   } = useImageStore();
 
-  const [selectedLayerId, setSelectedLayerId] = React.useState<string | null>(null);
+  const [selectedLayerId, setSelectedLayerId] = React.useState<string | null>(selectedOverlayId);
+
+  React.useEffect(() => {
+    setSelectedLayerId(selectedOverlayId);
+  }, [selectedOverlayId]);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Build unified layer list (bottom to top: image overlays order, then text, then annotations, then blur)
@@ -281,7 +288,14 @@ export function DepthSection() {
                   )}
                 >
                   <div
-                    onClick={() => setSelectedLayerId(isSelected ? null : layer.id)}
+                    onClick={() => {
+                      const nextId = selectedLayerId === layer.id ? null : layer.id;
+                      setSelectedLayerId(nextId);
+                      if (layer.type === 'image-overlay') {
+                        setSelectedOverlayId(nextId);
+                        setIsMainImageSelected(!nextId);
+                      }
+                    }}
                     className={cn(
                       'flex items-center gap-2.5 px-2.5 py-2 rounded-md cursor-pointer transition-all duration-150 group',
                       isSelected

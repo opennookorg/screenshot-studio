@@ -6,8 +6,7 @@ import { getR2ImageUrl } from '@/lib/r2'
 import { isOverlayPath } from '@/lib/r2-overlays'
 
 export function OverlayRenderer() {
-  const { imageOverlays, updateImageOverlay } = useImageStore()
-  const [selectedOverlayId, setSelectedOverlayId] = useState<string | null>(null)
+  const { imageOverlays, updateImageOverlay, selectedOverlayId, setSelectedOverlayId } = useImageStore()
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
