@@ -2,10 +2,12 @@
 
 import * as React from 'react';
 import { useImageStore } from '@/lib/store';
-import type { ImageOverlay } from '@/lib/store';
+import type { ImageOverlay, ImageOverlayTilt, ImageShadow } from '@/lib/store';
 import { SectionWrapper } from './SectionWrapper';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { DEFAULT_OVERLAY_SHADOW, DEFAULT_OVERLAY_TILT } from '@/lib/overlay-style';
 import { getR2ImageUrl } from '@/lib/r2';
 import { getOverlayUrl } from '@/lib/r2-overlays';
 import { isOverlayPath } from '@/lib/r2-overlays';
@@ -75,6 +77,8 @@ interface LayerItem {
 
 export function DepthSection() {
   const {
+    uploadedImageUrl,
+    imageName,
     imageOverlays,
     textOverlays,
     annotations,
@@ -252,14 +256,14 @@ export function DepthSection() {
         title="Layers"
         defaultOpen={true}
         action={
-          layers.length > 0 ? (
+          layers.length + (uploadedImageUrl ? 1 : 0) > 0 ? (
             <span className="text-[10px] tabular-nums text-muted-foreground">
-              {layers.length}
+              {layers.length + (uploadedImageUrl ? 1 : 0)}
             </span>
           ) : undefined
         }
       >
-        {layers.length === 0 ? (
+        {layers.length === 0 && !uploadedImageUrl ? (
           <div className="flex flex-col items-center gap-2 py-6 text-center">
             <LayersLogoIcon size={28} className="text-muted-foreground/50" />
             <p className="text-xs text-muted-foreground">
@@ -405,6 +409,27 @@ export function DepthSection() {
                 </div>
               );
             })}
+            {uploadedImageUrl && (
+              <div
+                className="flex items-center gap-2.5 px-2.5 py-2 rounded-md"
+                title="Main image"
+              >
+                <div className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 overflow-hidden bg-foreground/[0.06] border border-foreground/10">
+                  <img
+                    src={uploadedImageUrl}
+                    alt=""
+                    draggable={false}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-foreground truncate">
+                    {imageName || 'Main image'}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">Main image · edit in the Edit tab</p>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </SectionWrapper>
@@ -574,6 +599,10 @@ function OverlayProperties({
         </button>
       </div>
 
+      <OverlayCornerRadiusControls overlay={overlay} onUpdate={onUpdate} />
+      <OverlayTiltControls overlay={overlay} onUpdate={onUpdate} />
+      <OverlayShadowControls overlay={overlay} onUpdate={onUpdate} />
+
       <div className="space-y-1.5">
         <span className="text-xs font-medium text-muted-foreground">Position</span>
         <div className="flex gap-1.5">
@@ -609,6 +638,131 @@ function OverlayProperties({
         <Delete02Icon size={14} />
         Remove
       </button>
+    </div>
+  );
+}
+
+interface OverlayControlProps {
+  overlay: ImageOverlay;
+  onUpdate: (updates: Partial<ImageOverlay>) => void;
+}
+
+function OverlayCornerRadiusControls({ overlay, onUpdate }: OverlayControlProps) {
+  return (
+    <Slider
+      value={[overlay.radius ?? 0]}
+      onValueChange={(v) => onUpdate({ radius: v[0] })}
+      min={0}
+      max={100}
+      step={1}
+      label="Corner radius"
+      valueDisplay={`${overlay.radius ?? 0}px`}
+    />
+  );
+}
+
+function OverlayTiltControls({ overlay, onUpdate }: OverlayControlProps) {
+  const tilt = overlay.tilt ?? DEFAULT_OVERLAY_TILT;
+  const setTilt = (updates: Partial<ImageOverlayTilt>) =>
+    onUpdate({ tilt: { ...tilt, ...updates } });
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-muted-foreground">3D Tilt</span>
+        <button
+          onClick={() => onUpdate({ tilt: undefined })}
+          className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium text-muted-foreground hover:text-foreground hover:bg-foreground/[0.06] transition-colors border border-foreground/10"
+        >
+          <RefreshIcon size={11} /> Reset
+        </button>
+      </div>
+      <Slider
+        value={[tilt.rotateX]}
+        onValueChange={(v) => setTilt({ rotateX: v[0] })}
+        min={-45}
+        max={45}
+        step={1}
+        label="Rotate X"
+        valueDisplay={`${tilt.rotateX}°`}
+      />
+      <Slider
+        value={[tilt.rotateY]}
+        onValueChange={(v) => setTilt({ rotateY: v[0] })}
+        min={-45}
+        max={45}
+        step={1}
+        label="Rotate Y"
+        valueDisplay={`${tilt.rotateY}°`}
+      />
+      <Slider
+        value={[tilt.perspective]}
+        onValueChange={(v) => setTilt({ perspective: v[0] })}
+        min={50}
+        max={1000}
+        step={10}
+        label="Perspective"
+        valueDisplay={`${tilt.perspective}px`}
+      />
+    </div>
+  );
+}
+
+function OverlayShadowControls({ overlay, onUpdate }: OverlayControlProps) {
+  const shadow = overlay.shadow ?? DEFAULT_OVERLAY_SHADOW;
+  const setShadow = (updates: Partial<ImageShadow>) =>
+    onUpdate({ shadow: { ...shadow, ...updates } });
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-muted-foreground">Shadow</span>
+        <Switch
+          checked={shadow.enabled}
+          onCheckedChange={(enabled) => setShadow({ enabled })}
+          aria-label="Toggle overlay shadow"
+        />
+      </div>
+      {shadow.enabled && (
+        <>
+          <Slider
+            value={[shadow.blur]}
+            onValueChange={(v) => setShadow({ blur: v[0] })}
+            min={0}
+            max={60}
+            step={1}
+            label="Blur"
+            valueDisplay={`${shadow.blur}px`}
+          />
+          <Slider
+            value={[shadow.offsetX]}
+            onValueChange={(v) => setShadow({ offsetX: v[0] })}
+            min={-50}
+            max={50}
+            step={1}
+            label="Offset X"
+            valueDisplay={`${shadow.offsetX}px`}
+          />
+          <Slider
+            value={[shadow.offsetY]}
+            onValueChange={(v) => setShadow({ offsetY: v[0] })}
+            min={-50}
+            max={50}
+            step={1}
+            label="Offset Y"
+            valueDisplay={`${shadow.offsetY}px`}
+          />
+          <Slider
+            value={[shadow.opacity]}
+            onValueChange={(v) => setShadow({ opacity: v[0] })}
+            min={0}
+            max={1}
+            step={0.01}
+            label="Opacity"
+            valueDisplay={`${Math.round(shadow.opacity * 100)}%`}
+          />
+        </>
+      )}
     </div>
   );
 }

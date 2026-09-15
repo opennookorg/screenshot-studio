@@ -17,7 +17,7 @@ function getThumbSrc(overlay: { src: string; isCustom?: boolean }) {
 }
 
 export function ImageOverlaySection() {
-  const { imageOverlays, textOverlays, annotations, blurRegions, setActiveRightPanelTab, addImageOverlay } =
+  const { uploadedImageUrl, imageOverlays, textOverlays, annotations, blurRegions, setActiveRightPanelTab, addImageOverlay } =
     useImageStore();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -42,7 +42,7 @@ export function ImageOverlaySection() {
   }, [addImageOverlay]);
 
   const totalLayers =
-    imageOverlays.length + textOverlays.length + annotations.length + blurRegions.length;
+    (uploadedImageUrl ? 1 : 0) + imageOverlays.length + textOverlays.length + annotations.length + blurRegions.length;
 
   // Show up to 4 thumbnails from image overlays for the stacked preview
   const previewOverlays = imageOverlays.slice(-4);

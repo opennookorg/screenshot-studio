@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import { type ShadowConfig } from '../utils/shadow-utils';
+import { buildDropShadowFilter as buildSharedDropShadowFilter, parseShadowRgb } from '@/lib/drop-shadow';
 import { type ImageFilters, useImageStore } from '@/lib/store';
 import { SafariToolbar, ChromeToolbar } from '../frames/BrowserToolbar';
 import { CanvasObjectTopControls } from './CanvasObjectTopControls';
@@ -86,47 +87,16 @@ function buildImageFilter(imageFilters?: ImageFilters): string | undefined {
   return filters.length > 0 ? filters.join(' ') : undefined;
 }
 
-/**
- * Builds a CSS `filter: drop-shadow()` string.
- *
- * ShadowConfig fields (synced from imageShadow):
- * - softness → blur radius (from imageShadow.blur)
- * - offsetX/Y → shadow offset (direct from imageShadow)
- * - intensity → opacity (from imageShadow.opacity)
- * - color → shadow color (direct from imageShadow)
- */
 function buildDropShadowFilter(shadow: ShadowConfig): string | undefined {
   if (!shadow.enabled) return undefined;
-
-  const { softness, spread, color, intensity, offsetX, offsetY } = shadow;
-
-  // Parse shadow color — use it directly
-  let r = 0, g = 0, b = 0;
-  const colorMatch = color.match(/rgba?\(([^)]+)\)/);
-
-  if (colorMatch) {
-    const parts = colorMatch[1].split(',').map(s => s.trim());
-    r = parseInt(parts[0]) || 0;
-    g = parseInt(parts[1]) || 0;
-    b = parseInt(parts[2]) || 0;
-  } else if (color.startsWith('#')) {
-    const hex = color.replace('#', '');
-    r = parseInt(hex.slice(0, 2), 16) || 0;
-    g = parseInt(hex.slice(2, 4), 16) || 0;
-    b = parseInt(hex.slice(4, 6), 16) || 0;
-  }
-
-  const x = offsetX ?? 0;
-  const y = offsetY ?? 0;
-  // Blur from the blur slider; spread adds extra diffusion
-  const blur = softness + (spread || 0);
-  const opacity = Math.min(1, Math.max(0, intensity));
-
-  // Two-layer shadow: key shadow + soft ambient fill
-  return [
-    `drop-shadow(${x}px ${y}px ${blur}px rgba(${r}, ${g}, ${b}, ${opacity}))`,
-    `drop-shadow(0px 0px ${blur * 0.5}px rgba(${r}, ${g}, ${b}, ${opacity * 0.2}))`,
-  ].join(' ');
+  return buildSharedDropShadowFilter({
+    blur: shadow.softness,
+    spread: shadow.spread || 0,
+    color: shadow.color,
+    opacity: shadow.intensity,
+    offsetX: shadow.offsetX ?? 0,
+    offsetY: shadow.offsetY ?? 0,
+  });
 }
 
 /**
@@ -138,21 +108,7 @@ function buildBoxShadow(shadow: ShadowConfig): string | undefined {
   if (!shadow.enabled) return undefined;
 
   const { softness, spread, color, intensity, offsetX, offsetY } = shadow;
-
-  let r = 0, g = 0, b = 0;
-  const colorMatch = color.match(/rgba?\(([^)]+)\)/);
-
-  if (colorMatch) {
-    const parts = colorMatch[1].split(',').map(s => s.trim());
-    r = parseInt(parts[0]) || 0;
-    g = parseInt(parts[1]) || 0;
-    b = parseInt(parts[2]) || 0;
-  } else if (color.startsWith('#')) {
-    const hex = color.replace('#', '');
-    r = parseInt(hex.slice(0, 2), 16) || 0;
-    g = parseInt(hex.slice(2, 4), 16) || 0;
-    b = parseInt(hex.slice(4, 6), 16) || 0;
-  }
+  const [r, g, b] = parseShadowRgb(color);
 
   const x = offsetX ?? 0;
   const y = offsetY ?? 0;
