@@ -438,6 +438,14 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="dark">
+      <head>
+        <Script
+          src="https://databull-analytics.kartik-labhshetwar.workers.dev/js/script.js"
+          data-website-id="dc_iddmmhorph5i5f"
+          data-domain="screenshot-studio.com"
+          strategy="afterInteractive"
+        />
+      </head>
       <meta name="msvalidate.01" content="A3B8CB50BBD78710971A13FA3EE1E544" />
       <link
         rel="alternate"
