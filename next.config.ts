@@ -121,47 +121,59 @@ const nextConfig: NextConfig = {
   // Also proxy PostHog through same origin to bypass ad blockers
   async rewrites() {
     const r2Url = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
-    return [
-      // LLMs.txt — serve markdown to AI agents
-      {
-        source: "/llms.txt",
-        destination: "/api/llms",
-      },
-      {
-        source: "/llms-full.txt",
-        destination: "/api/llms-full",
-      },
-      {
-        source: "/openapi.json",
-        destination: "/api/openapi",
-      },
-      {
-        source: "/indexnow-key.txt",
-        destination: "/api/indexnow",
-      },
-      {
-        source: "/.well-known/openapi.json",
-        destination: "/api/openapi",
-      },
-      // PostHog reverse proxy — static assets must come first
-      {
-        source: "/svc/static/:path*",
-        destination: "https://us-assets.i.posthog.com/static/:path*",
-      },
-      {
-        source: "/svc/:path*",
-        destination: "https://us.i.posthog.com/:path*",
-      },
-      // R2 asset proxy
-      ...(r2Url
-        ? [
-            {
-              source: "/r2-assets/:path*",
-              destination: `${r2Url}/:path*`,
-            },
-          ]
-        : []),
-    ];
+    return {
+      beforeFiles: [
+        {
+          source: "/guides",
+          destination:
+            "https://o--dfb8769c-6039-46cd-8425-71c74b77f43f.outrankblog.com/",
+        },
+        {
+          source: "/guides/:path*",
+          destination:
+            "https://o--dfb8769c-6039-46cd-8425-71c74b77f43f.outrankblog.com/:path*",
+        },
+      ],
+      afterFiles: [
+        {
+          source: "/llms.txt",
+          destination: "/api/llms",
+        },
+        {
+          source: "/llms-full.txt",
+          destination: "/api/llms-full",
+        },
+        {
+          source: "/openapi.json",
+          destination: "/api/openapi",
+        },
+        {
+          source: "/indexnow-key.txt",
+          destination: "/api/indexnow",
+        },
+        {
+          source: "/.well-known/openapi.json",
+          destination: "/api/openapi",
+        },
+        {
+          source: "/svc/static/:path*",
+          destination: "https://us-assets.i.posthog.com/static/:path*",
+        },
+        {
+          source: "/svc/:path*",
+          destination: "https://us.i.posthog.com/:path*",
+        },
+        ...(r2Url
+          ? [
+              {
+                source: "/r2-assets/:path*",
+                destination: `${r2Url}/:path*`,
+              },
+            ]
+          : []),
+      ],
+      fallback: [],
+    };
   },
 
   // REQUIRED for react-konva

@@ -64,6 +64,6 @@ export default function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next|_vercel|r2-assets|svc|llms\\.txt|llms-full\\.txt|openapi\\.json|robots\\.txt|sitemap\\.xml|.*\\..*).*)",
+    "/((?!api|_next|_vercel|r2-assets|svc|guides|llms\\.txt|llms-full\\.txt|openapi\\.json|robots\\.txt|sitemap\\.xml|.*\\..*).*)",
   ],
 };

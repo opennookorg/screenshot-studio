@@ -4,16 +4,6 @@
       "maxDuration": 10,
       "memory": 1024
     }
-  },
-  "rewrites": [
-    {
-      "source": "/guides",
-      "destination": "https://o--dfb8769c-6039-46cd-8425-71c74b77f43f.outrankblog.com/"
-    },
-    {
-      "source": "/guides/:path*",
-      "destination": "https://o--dfb8769c-6039-46cd-8425-71c74b77f43f.outrankblog.com/:path*"
-    }
-  ]
+  }
 }
 
