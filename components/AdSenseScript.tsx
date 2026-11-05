@@ -1,3 +1,4 @@
+import Script from "next/script";
 import { locales } from "@/i18n/routing";
 
 export const ADSENSE_CLIENT = "ca-pub-8704843786311642";
@@ -16,8 +17,8 @@ export function isAdFreePath(pathname: string): boolean {
 /** AdSense loader for content pages only; editor workspaces and error pages never render it. */
 export function AdSenseScript() {
   return (
-    <script
-      async
+    <Script
+      strategy="afterInteractive"
       src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
       crossOrigin="anonymous"
     />
