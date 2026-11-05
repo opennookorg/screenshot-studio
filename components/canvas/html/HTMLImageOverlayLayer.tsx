@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
-import Moveable from 'react-moveable';
+import type Moveable from 'react-moveable';
+import { LazyMoveable } from '@/components/canvas/LazyMoveable';
 import type { ImageOverlay } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import {
@@ -272,7 +273,7 @@ export function HTMLImageOverlayLayer({
 
       {selectedOverlay && selectedEl && !isShadow && (
         <>
-          <Moveable
+          <LazyMoveable
             ref={moveableRef}
             target={selectedEl}
             draggable={true}

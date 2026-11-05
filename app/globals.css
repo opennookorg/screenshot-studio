@@ -325,7 +325,6 @@
     }
   }
 
-  /* Prevent iOS zoom on focus — only enforce 16px on mobile */
   @media (max-width: 768px) {
     input,
     textarea,
@@ -495,6 +494,34 @@
       animation: none;
     }
   }
+
+  @keyframes hero-mask-in {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes hero-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--hero-fade-y, 8px));
+    }
+  }
+
+  .hero-mask-in {
+    animation: hero-mask-in var(--hero-duration, 0.75s) cubic-bezier(0.33, 1, 0.68, 1) var(--hero-delay, 0s) both;
+  }
+
+  .hero-fade-in {
+    animation: hero-fade-in var(--hero-duration, 0.25s) cubic-bezier(0.33, 1, 0.68, 1) var(--hero-delay, 0s) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-mask-in,
+    .hero-fade-in {
+      animation: none;
+    }
+  }
 }
 
 .landing-heading {
@@ -509,9 +536,6 @@
   color: transparent;
 }
 
-/* Moveable control box — must be outside @layer base so it isn't
-   de-prioritised by Tailwind v4's cascade layers. The parent container
-   has pointer-events:none; this ensures the handles stay interactive. */
 .moveable-control-box,
 .moveable-control-box * {
   pointer-events: auto !important;

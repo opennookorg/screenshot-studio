@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import dynamic from "next/dynamic";
 import { LeftEditPanel } from "./LeftEditPanel";
 import { RightSettingsPanel } from "./RightSettingsPanel";
 import { UnifiedRightPanel } from "./unified-right-panel";
@@ -9,6 +10,7 @@ import { EditorCanvas } from "@/components/canvas/EditorCanvas";
 import { EditorStoreSync } from "@/components/canvas/EditorStoreSync";
 import { EditorHeader } from "./EditorHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useHasOpened } from "@/hooks/useHasOpened";
 import { MobileDrawer } from "@/components/ui/responsive-popover";
 import { Button } from "@/components/ui/button";
 import { Settings02Icon, Upload01Icon, VideoReplayIcon, MagicWand01Icon } from "hugeicons-react";
@@ -21,7 +23,6 @@ import {
   hasVisibleMockups,
   shouldRenderSourceImage,
 } from "@/lib/device-mockups/layouts";
-import { TemplateLibraryDrawer } from "@/components/templates/TemplateLibraryDrawer";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from "@/lib/constants";
 import { useDeviceUIStore } from "@/lib/store/device-ui";
 import { toast } from "sonner";
@@ -29,6 +30,14 @@ import {
   hasTemplateDemoMedia,
   isTemplateDemoMedia,
 } from "@/lib/templates/demo-media";
+
+const TemplateLibraryDrawer = dynamic(
+  () =>
+    import("@/components/templates/TemplateLibraryDrawer").then(
+      (m) => m.TemplateLibraryDrawer,
+    ),
+  { ssr: false },
+);
 
 function TemplateMediaPrompt() {
   const imageName = useImageStore((state) => state.imageName);
@@ -120,8 +129,10 @@ function EditorMain() {
     editorMode,
     showTimeline,
     toggleTimeline,
+    showTemplates,
     setShowTemplates,
   } = useImageStore();
+  const hasOpenedTemplates = useHasOpened(showTemplates);
 
   // enable autosave
   useAutosaveDraft();
@@ -141,7 +152,7 @@ function EditorMain() {
       <EditorStoreSync />
 
       <EditorHeader />
-      <TemplateLibraryDrawer />
+      {hasOpenedTemplates && <TemplateLibraryDrawer />}
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="flex min-h-0 flex-1 overflow-hidden">

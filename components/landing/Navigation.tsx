@@ -224,7 +224,7 @@ export function Navigation({
   return (
     <motion.nav
       className={cn(
-        "sticky top-0 z-50 mx-auto w-full max-w-6xl",
+        "sticky top-0 z-50 mx-auto h-[72px] w-full max-w-6xl",
         !visible && "pointer-events-none",
       )}
       initial={{ y: 0, opacity: 1 }}

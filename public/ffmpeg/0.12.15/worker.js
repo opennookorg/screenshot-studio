@@ -17,7 +17,7 @@ const load = async ({ coreURL: _coreURL, wasmURL: _wasmURL, workerURL: _workerUR
             _coreURL = CORE_URL.replace('/umd/', '/esm/');
         // when web worker type is `module`.
         self.createFFmpegCore = (await import(
-        /* @vite-ignore */ /* webpackIgnore: true */ _coreURL)).default;
+        /* @vite-ignore */ _coreURL)).default;
         if (!self.createFFmpegCore) {
             throw ERROR_IMPORT_FAILURE;
         }

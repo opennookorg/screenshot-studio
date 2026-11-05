@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
-import Moveable from "react-moveable";
+import type Moveable from "react-moveable";
+import { LazyMoveable } from "@/components/canvas/LazyMoveable";
 import { DeviceShell } from "./DeviceShell";
 import { CanvasObjectTopControls } from "@/components/canvas/html/CanvasObjectTopControls";
 import { getMockupDefinition, MAX_DEVICE_MOCKUPS } from "@/lib/constants/mockups";
@@ -291,7 +292,7 @@ function MockupRenderer({ mockup, canvasWidth, canvasHeight, zIndex }: MockupRen
       ) : null}
 
       {isSelected && targetElement && !isEditingScreen ? (
-        <Moveable
+        <LazyMoveable
           ref={moveableRef}
           target={targetElement}
           draggable

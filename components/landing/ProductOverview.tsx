@@ -12,7 +12,6 @@ export function ProductOverview(): React.JSX.Element {
               width={256}
               height={256}
               className="h-60 w-60 self-end object-contain lg:h-64 lg:w-64"
-              priority
             />
           </div>
 

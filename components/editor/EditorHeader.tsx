@@ -43,7 +43,7 @@ import { AspectRatioPicker } from "@/components/aspect-ratio/aspect-ratio-picker
 import { ResponsivePopover } from "@/components/ui/responsive-popover";
 import { CopyProgressDialog } from "@/components/canvas/dialogs/CopyProgressDialog";
 import { BatchExportProgressDialog } from "@/components/canvas/dialogs/BatchExportProgressDialog";
-import { ExportSlideshowDialog } from "@/lib/export-slideshow-dialog";
+import { LazyExportSlideshowDialog } from "@/lib/export-slideshow-dialog-lazy";
 import { ImageExportProgressView } from "@/components/canvas/dialogs/ImageProgressView";
 import {
   FormatSelector,
@@ -586,7 +586,7 @@ export function EditorHeader() {
         format={exportSettings.format}
       />
 
-      <ExportSlideshowDialog
+      <LazyExportSlideshowDialog
         open={exportSlideshowOpen}
         onOpenChange={setExportSlideshowOpen}
       />

@@ -18,12 +18,10 @@ function ZoomFrame({
   src,
   alt,
   scale,
-  priority,
 }: {
   src: string;
   alt: string;
   scale: MotionValue<number> | number;
-  priority?: boolean;
 }): React.JSX.Element {
   return (
     <motion.div style={{ scale }} className="zoom-parallax__el">
@@ -37,7 +35,6 @@ function ZoomFrame({
           quality="auto"
           crop="fill"
           gravity="auto"
-          priority={priority}
         />
       </div>
     </motion.div>
@@ -112,7 +109,6 @@ export function MasonryGrid(): React.JSX.Element {
               src={src}
               alt={`Example design ${index + 1}`}
               scale={scales[index] ?? scale4}
-              priority={index === 0}
             />
           ))}
         </div>

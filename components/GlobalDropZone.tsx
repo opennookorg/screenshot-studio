@@ -5,7 +5,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import { locales } from '@/i18n/routing';
-import { useEditorStore, useImageStore } from '@/lib/store';
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from '@/lib/constants';
 import { isLocalDropTarget } from '@/lib/drop-routing';
 import { shouldIgnoreEditorShortcut } from '@/lib/editor-shortcuts';
@@ -21,9 +20,6 @@ export function GlobalDropZone({ children }: GlobalDropZoneProps) {
   const dragCounterRef = React.useRef(0);
   const router = useRouter();
   const pathname = usePathname();
-
-  const { setScreenshot } = useEditorStore();
-  const { addImages, addImageOverlay } = useImageStore();
 
   const locale = locales.find((locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`));
   const editorPath = `${locale ? `/${locale}` : ''}/editor`;
@@ -56,8 +52,10 @@ export function GlobalDropZone({ children }: GlobalDropZoneProps) {
       setError(null);
 
       // Small delay for the animation to play
-      setTimeout(() => {
-        const hasMainImage = !!useImageStore.getState().uploadedImageUrl;
+      setTimeout(async () => {
+        const { useEditorStore, useImageStore } = await import('@/lib/store');
+        const { addImages, addImageOverlay, uploadedImageUrl } = useImageStore.getState();
+        const hasMainImage = !!uploadedImageUrl;
 
         if (isEditorPage && hasMainImage) {
           // Add as overlay images on top of existing canvas
@@ -78,7 +76,7 @@ export function GlobalDropZone({ children }: GlobalDropZoneProps) {
         } else {
           const imageUrl = URL.createObjectURL(imageFiles[0]);
           addImages(imageFiles);
-          setScreenshot({ src: imageUrl });
+          useEditorStore.getState().setScreenshot({ src: imageUrl });
 
           if (!isEditorPage) {
             router.push(editorPath);
@@ -89,7 +87,7 @@ export function GlobalDropZone({ children }: GlobalDropZoneProps) {
         setIsDraggingOver(false);
       }, 300);
     },
-    [validateFile, addImages, addImageOverlay, setScreenshot, isEditorPage, editorPath, router]
+    [validateFile, isEditorPage, editorPath, router]
   );
 
   // Global drag events

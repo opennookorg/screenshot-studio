@@ -1,12 +1,4 @@
-/**
- * Analytics utility — PostHog only
- *
- * PostHog is initialized in instrumentation-client.ts with defaults: '2026-01-30'.
- * Import posthog from 'posthog-js' anywhere to capture custom events.
- * Pageviews, clicks, and interactions are captured automatically.
- */
-
-import posthog from 'posthog-js';
+import { loadPosthog } from '@/lib/posthog';
 
 // =============================================================================
 // Core Tracking Functions
@@ -40,11 +32,9 @@ export function trackEvent(
     return;
   }
 
-  try {
-    posthog.capture(eventName, eventData);
-  } catch (error) {
-    console.warn('[PostHog] Failed:', error);
-  }
+  loadPosthog()
+    .then((posthog) => posthog.capture(eventName, eventData))
+    .catch((error) => console.warn('[PostHog] Failed:', error));
 }
 
 /**
@@ -54,22 +44,18 @@ export function identifyUser(
   userId: string,
   properties?: Record<string, string | number | boolean>
 ): void {
-  try {
-    posthog.identify(userId, properties);
-  } catch (error) {
-    console.warn('[PostHog] Identify failed:', error);
-  }
+  loadPosthog()
+    .then((posthog) => posthog.identify(userId, properties))
+    .catch((error) => console.warn('[PostHog] Identify failed:', error));
 }
 
 /**
  * Reset user identity (call on logout)
  */
 export function resetUser(): void {
-  try {
-    posthog.reset();
-  } catch (error) {
-    console.warn('[PostHog] Reset failed:', error);
-  }
+  loadPosthog()
+    .then((posthog) => posthog.reset())
+    .catch((error) => console.warn('[PostHog] Reset failed:', error));
 }
 
 // =============================================================================
@@ -109,9 +95,6 @@ export function trackCopyToClipboard(success: boolean): void {
   trackEvent('copy_to_clipboard', { success });
 }
 
-// =============================================================================
-// Feature Usage — high-level actions that help understand what people use
-// =============================================================================
 
 export function trackBackgroundChange(
   type: 'gradient' | 'solid' | 'image' | 'transparent',

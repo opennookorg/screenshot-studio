@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Input } from './input';
-import { z } from 'zod';
 import { cn } from '@/lib/utils';
 
 interface ColorPickerProps {
@@ -123,10 +122,11 @@ function colorToHsva(color: string): HsvaColor {
   return { h, s, v, alpha: parsed.alpha };
 }
 
-const hexColorSchema = z.string()
-  .trim()
-  .regex(/^#?[0-9a-fA-F]{6}$/, 'Invalid hex color')
-  .transform((value) => value.startsWith('#') ? value : `#${value}`);
+function parseHexColor(input: string): string | null {
+  const value = input.trim();
+  if (!/^#?[0-9a-fA-F]{6}$/.test(value)) return null;
+  return value.startsWith('#') ? value : `#${value}`;
+}
 
 export function ColorPicker({ color, onChange, className }: ColorPickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -224,20 +224,20 @@ export function ColorPicker({ color, onChange, className }: ColorPickerProps) {
   };
 
   const handleHexCommit = () => {
-    const result = hexColorSchema.safeParse(hexInput);
-    if (!result.success) {
+    const hex = parseHexColor(hexInput);
+    if (!hex) {
       setHexError(true);
       return;
     }
 
-    const rgb = hexToRgb(result.data);
+    const rgb = hexToRgb(hex);
     if (!rgb) {
       setHexError(true);
       return;
     }
 
     const [newH, newS, newV] = rgbToHsv(rgb[0], rgb[1], rgb[2]);
-    setHexInput(result.data.toLowerCase());
+    setHexInput(hex.toLowerCase());
     setHexError(false);
     updateColor({ h: newH, s: newS, v: newV, alpha });
   };

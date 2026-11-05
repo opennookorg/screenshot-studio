@@ -122,6 +122,7 @@ export function Footer({ brandName = "Screenshot Studio" }: FooterProps) {
                 <img
                   src={PEERLIST_BADGE}
                   alt="Peerlist Project Spotlight. Rank 1"
+                  loading="lazy"
                   className="h-10 w-auto"
                 />
               </a>
@@ -135,6 +136,7 @@ export function Footer({ brandName = "Screenshot Studio" }: FooterProps) {
                   alt="Featured on UsefulShelf"
                   width={248}
                   height={66}
+                  loading="lazy"
                   className="h-10 w-auto"
                 />
               </a>

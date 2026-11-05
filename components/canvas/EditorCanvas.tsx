@@ -5,7 +5,7 @@ import { useImageStore } from "@/lib/store";
 import { CleanUploadState } from "@/components/controls/CleanUploadState";
 import { useLayoutEffect, useState } from "react";
 import React from "react";
-import { ExportSlideshowDialog } from "@/lib/export-slideshow-dialog";
+import { LazyExportSlideshowDialog } from "@/lib/export-slideshow-dialog-lazy";
 import { CanvasStageShell } from "@/components/canvas/CanvasStageShell";
 import { CanvasStageLoadingOverlay } from "@/components/canvas/CanvasStageLoadingOverlay";
 import ClientCanvas from "@/components/canvas/ClientCanvas";
@@ -128,7 +128,7 @@ export function EditorCanvas() {
   return (
     <>
       <div className="flex min-h-0 flex-col h-full w-full relative">
-        <ExportSlideshowDialog
+        <LazyExportSlideshowDialog
           open={exportOpen}
           onOpenChange={setExportOpen}
         />

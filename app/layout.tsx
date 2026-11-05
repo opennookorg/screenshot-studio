@@ -56,7 +56,6 @@ const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 const poppins = Poppins({
@@ -70,84 +69,72 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
   preload: false,
-  weight: ["300", "400", "500", "600", "700"],
 });
 
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
   subsets: ["latin"],
   preload: false,
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
 });
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 const sora = Sora({
   variable: "--font-sora",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 });
 
 const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
   preload: false,
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
 });
 
 const raleway = Raleway({
   variable: "--font-raleway",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 const lexend = Lexend({
   variable: "--font-lexend",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 const workSans = Work_Sans({
   variable: "--font-work-sans",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 const urbanist = Urbanist({
   variable: "--font-urbanist",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 const albertSans = Albert_Sans({
   variable: "--font-albert-sans",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 // Display/Condensed fonts
@@ -155,7 +142,6 @@ const oswald = Oswald({
   variable: "--font-oswald",
   subsets: ["latin"],
   preload: false,
-  weight: ["200", "300", "400", "500", "600", "700"],
 });
 
 const bebasNeue = Bebas_Neue({
@@ -177,21 +163,18 @@ const playfairDisplay = Playfair_Display({
   variable: "--font-playfair-display",
   subsets: ["latin"],
   preload: false,
-  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
   preload: false,
-  weight: ["400", "500", "600", "700"],
 });
 
 const libreBaskerville = Libre_Baskerville({
   variable: "--font-libre-baskerville",
   subsets: ["latin"],
   preload: false,
-  weight: ["400", "700"],
 });
 
 // Handwriting/Script fonts
@@ -212,7 +195,6 @@ const dancingScript = Dancing_Script({
   variable: "--font-dancing-script",
   subsets: ["latin"],
   preload: false,
-  weight: ["400", "500", "600", "700"],
 });
 
 // Monospace fonts
@@ -220,14 +202,12 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
   preload: false,
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 });
 
 const firaCode = Fira_Code({
   variable: "--font-fira-code",
   subsets: ["latin"],
   preload: false,
-  weight: ["300", "400", "500", "600", "700"],
 });
 
 // Combine all font variables
@@ -439,21 +419,18 @@ export default async function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <script
-          type="text/javascript"
-          dangerouslySetInnerHTML={{
-            __html: `(function(c,l,a,r,i,t,y){
+        <Script id="ms-clarity-init" strategy="lazyOnload">
+          {`(function(c,l,a,r,i,t,y){
     c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
     t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
     y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-})(window, document, "clarity", "script", "z69t51rsvv");`,
-          }}
-        />
+})(window, document, "clarity", "script", "z69t51rsvv");`}
+        </Script>
         <Script
           src="https://databull-analytics.kartik-labhshetwar.workers.dev/js/script.js"
           data-website-id="dc_iddmmhorph5i5f"
           data-domain="screenshot-studio.com"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
       </head>
       <meta name="msvalidate.01" content="A3B8CB50BBD78710971A13FA3EE1E544" />
@@ -485,7 +462,11 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-WWTQR26VH4');`}
         </Script>
-        <Script src="https://clicks.page/t.js" data-site="682g4e3l336g" />
+        <Script
+          src="https://clicks.page/t.js"
+          data-site="682g4e3l336g"
+          strategy="lazyOnload"
+        />
         <QueryProvider>
           <GlobalDropZone>
             <PathTracker />

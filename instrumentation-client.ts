@@ -1,7 +1,7 @@
-import posthog from 'posthog-js'
+import { loadPosthog } from "@/lib/posthog";
 
-posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-  api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-  ui_host: 'https://us.posthog.com',
-  defaults: '2026-01-30',
-})
+if ("requestIdleCallback" in window) {
+  requestIdleCallback(() => void loadPosthog(), { timeout: 4000 });
+} else {
+  setTimeout(() => void loadPosthog(), 2000);
+}
