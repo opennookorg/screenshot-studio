@@ -15,16 +15,18 @@ import {
   detectEncodeSupport,
   formatBytes,
   formatFromMime,
-  resolveOutputFormat,
+  resolveToolFormat,
   savingsPercent,
   DEFAULT_TOOL_SETTINGS,
   type BatchToolEngine,
+  type CropPlacement,
   type RasterFormat,
   type ToolSettings,
 } from "@/lib/image-tools";
 import type { ToolDefinition, ToolEngine } from "@/lib/seo/tools";
 import { ToolDropzone } from "./ToolDropzone";
 import { FileQueue } from "./FileQueue";
+import { CropPositioner } from "./CropPositioner";
 import { useToolQueue } from "./useToolQueue";
 import { CARD_CLASS } from "./ui";
 import {
@@ -75,6 +77,9 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
     "png",
     "jpeg",
   ]);
+  const [cropPlacementById, setCropPlacementById] = React.useState<
+    Record<string, CropPlacement>
+  >({});
 
   // Canvas encoders lie about unsupported formats, so the real list is probed
   // once and drives which options are offered at all.
@@ -105,11 +110,24 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
     [resetResults]
   );
 
+  const handleCropPlacement = React.useCallback(
+    (itemId: string, placement: CropPlacement) => {
+      setCropPlacementById((previous) => ({ ...previous, [itemId]: placement }));
+      resetResults();
+    },
+    [resetResults]
+  );
+
   const handleRun = React.useCallback(() => {
     void queue.run((item) => {
-      const format = resolveOutputFormat(settings.format, item.file.type);
+      const format = resolveToolFormat(engine, settings, item.file.type);
       return {
-        options: buildProcessOptions(engine, settings, item.file.type),
+        options: buildProcessOptions(
+          engine,
+          settings,
+          item.file.type,
+          cropPlacementById[item.id]
+        ),
         outputName: buildOutputName(engine, item.name, format),
         // Compressing to the same format should never return a bigger file.
         // A deliberate conversion or resize is delivered whatever its size.
@@ -117,7 +135,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
           engine === "compress" && format === formatFromMime(item.file.type),
       };
     });
-  }, [engine, queue, settings]);
+  }, [cropPlacementById, engine, queue, settings]);
 
   const Panel = PANELS[engine];
   const reference = queue.items.find((item) => item.source)?.source ?? null;
@@ -128,7 +146,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
   const outputFormats = Array.from(
     new Set(
       queue.items.map((item) =>
-        resolveOutputFormat(settings.format, item.file.type)
+        resolveToolFormat(engine, settings, item.file.type)
       )
     )
   );
@@ -193,6 +211,15 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
             compact
           />
         </div>
+        {engine === "resize" && settings.resizeTemplateId ? (
+          <CropPositioner
+            items={queue.items}
+            resize={settings.resize}
+            placementById={cropPlacementById}
+            onPlacementChange={handleCropPlacement}
+            disabled={queue.isRunning}
+          />
+        ) : null}
       </div>
 
       <aside

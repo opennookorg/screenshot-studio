@@ -68,11 +68,12 @@ function StatusBadge({ item }: { item: QueueItem }) {
     // A file that came back bigger is not a success, whatever the user asked
     // for, so it does not get the green tick that every other result carries.
     const grew = saved < 0;
+    const warn = grew || item.result.overLimit;
 
     return (
       <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
         <span className="flex items-center gap-1.5 text-muted-foreground">
-          {grew ? (
+          {warn ? (
             <Alert02Icon
               size={14}
               className="text-amber-600 dark:text-amber-500"
@@ -105,6 +106,11 @@ function StatusBadge({ item }: { item: QueueItem }) {
         <span className="text-muted-foreground">
           {item.result.width} × {item.result.height}
         </span>
+        {item.result.overLimit ? (
+          <span className="font-medium text-amber-600 dark:text-amber-500">
+            Can&apos;t reach your size limit at these dimensions
+          </span>
+        ) : null}
       </span>
     );
   }

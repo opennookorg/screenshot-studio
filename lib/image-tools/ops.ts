@@ -11,10 +11,12 @@
 import {
   clampCropRect,
   computeResizeDimensions,
+  coverCropForResize,
   dimensionsAfterRotation,
 } from "./geometry";
-import { clampQuality, mimeFor, supportsTransparency } from "./format";
+import { clampQuality, isLossy, mimeFor, supportsTransparency } from "./format";
 import { encodeAvif } from "./avif";
+import { encodeWithinLimit } from "./size-limit";
 import type {
   CropRect,
   Dimensions,
@@ -298,7 +300,12 @@ export async function processBitmap(
 
   const crop = options.crop
     ? clampCropRect(options.crop, source)
-    : { x: 0, y: 0, width: source.width, height: source.height };
+    : (options.resize && coverCropForResize(source, options.resize)) ?? {
+        x: 0,
+        y: 0,
+        width: source.width,
+        height: source.height,
+      };
 
   const transform = options.transform ?? {
     rotate: 0 as const,
@@ -326,23 +333,30 @@ export async function processBitmap(
     canvas = downscaleInSteps(canvas, target);
   }
 
-  const { format, quality, background } = options.encode;
+  const { format, quality, background, maxBytes } = options.encode;
   if (!supportsTransparency(format)) {
     canvas = flattenOnto(canvas, background ?? "#ffffff");
   }
 
-  const blob =
-    format === "avif"
-      ? // Canvas cannot encode AVIF, so the pixels go to the WebAssembly
-        // encoder instead of through toBlob.
-        await encodeAvif(readPixels(canvas), clampQuality(quality, format))
-      : await canvasToBlob(canvas, mimeFor(format), clampQuality(quality, format));
+  const finalCanvas = canvas;
+  const { blob, overLimit } = await encodeWithinLimit(
+    (attempt) =>
+      format === "avif"
+        ? // Canvas cannot encode AVIF, so the pixels go to the WebAssembly
+          // encoder instead of through toBlob.
+          encodeAvif(readPixels(finalCanvas), attempt)
+        : canvasToBlob(finalCanvas, mimeFor(format), attempt),
+    clampQuality(quality, format),
+    maxBytes,
+    isLossy(format)
+  );
 
   return {
     blob,
     width: target.width,
     height: target.height,
     bytes: blob.size,
+    overLimit,
   };
 }
 

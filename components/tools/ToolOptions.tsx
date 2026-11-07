@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -8,6 +9,9 @@ import { Switch } from "@/components/ui/switch";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { cn } from "@/lib/utils";
 import {
+  applyResizeTemplate,
+  clearResizeTemplate,
+  findResizeTemplate,
   FORMAT_LABELS,
   isLossy,
   matchLockedAxis,
@@ -16,8 +20,10 @@ import {
   type Dimensions,
   type OutputFormatChoice,
   type RasterFormat,
+  type ResizeTemplateSelection,
   type ToolSettings,
 } from "@/lib/image-tools";
+import { ResizeTemplatePicker } from "./ResizeTemplatePicker";
 
 export interface PanelProps {
   settings: ToolSettings;
@@ -292,11 +298,26 @@ export function ConvertOptions({
   );
 }
 
-export function ResizeOptions({ settings, onChange, reference }: PanelProps) {
+export function ResizeOptions({ settings, onChange, reference, sourceFormats }: PanelProps) {
   const { resize } = settings;
 
   const setResize = (updates: Partial<ToolSettings["resize"]>) =>
     onChange({ resize: { ...resize, ...updates } });
+
+  const selection = findResizeTemplate(settings.resizeTemplateId);
+  const template = selection?.template ?? null;
+  const isEdited =
+    template !== null &&
+    (resize.width !== template.width || resize.height !== template.height);
+
+  const handleTemplate = (next: ResizeTemplateSelection | null) =>
+    onChange(next ? applyResizeTemplate(resize, next) : clearResizeTemplate(resize));
+
+  const handleMode = (mode: ToolSettings["resize"]["mode"]) => {
+    // A percentage has no exact size for a template to promise.
+    const base = template ? clearResizeTemplate(resize) : { resize };
+    onChange({ ...base, resize: { ...base.resize, mode } });
+  };
 
   /**
    * With the ratio locked we mirror the typed value onto the other axis so the
@@ -322,6 +343,18 @@ export function ResizeOptions({ settings, onChange, reference }: PanelProps) {
 
   return (
     <div className="flex flex-col gap-5">
+      <OptionGroup label="Template" hint={template?.detail}>
+        <ResizeTemplatePicker
+          selectedId={settings.resizeTemplateId}
+          onSelect={handleTemplate}
+        />
+        {selection?.group.hint ? (
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {selection.group.hint}
+          </p>
+        ) : null}
+      </OptionGroup>
+
       <OptionGroup label="Resize by">
         <SegmentedControl
           options={[
@@ -329,9 +362,7 @@ export function ResizeOptions({ settings, onChange, reference }: PanelProps) {
             { id: "percentage", label: "Percentage" },
           ]}
           value={resize.mode}
-          onChange={(next) =>
-            setResize({ mode: next as ToolSettings["resize"]["mode"] })
-          }
+          onChange={(next) => handleMode(next as ToolSettings["resize"]["mode"])}
           ariaLabel="Resize mode"
           size="sm"
         />
@@ -369,13 +400,40 @@ export function ResizeOptions({ settings, onChange, reference }: PanelProps) {
               />
             </div>
           </div>
-          <ToggleRow
-            id="resize-lock"
-            label="Lock aspect ratio"
-            hint="Fill one box and the other follows"
-            checked={resize.lockAspectRatio}
-            onCheckedChange={(lockAspectRatio) => setResize({ lockAspectRatio })}
-          />
+          {template ? (
+            <div className="flex flex-col gap-2">
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                Your image is cropped to fit, so nothing gets stretched.
+                {selection?.group.format
+                  ? ` Saved as ${FORMAT_LABELS[selection.group.format]}.`
+                  : ""}
+              </p>
+              {isEdited ? (
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-muted-foreground">
+                    Edited from {template.width} × {template.height}
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() =>
+                      setResize({ width: template.width, height: template.height })
+                    }
+                  >
+                    Reset
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <ToggleRow
+              id="resize-lock"
+              label="Lock aspect ratio"
+              hint="Fill one box and the other follows"
+              checked={resize.lockAspectRatio}
+              onCheckedChange={(lockAspectRatio) => setResize({ lockAspectRatio })}
+            />
+          )}
         </div>
       ) : (
         <OptionGroup label="Scale">
@@ -394,7 +452,11 @@ export function ResizeOptions({ settings, onChange, reference }: PanelProps) {
       <ToggleRow
         id="resize-upscale"
         label="Allow upscaling"
-        hint="Enlarging cannot add detail, so this is off by default"
+        hint={
+          template
+            ? "Lets a smaller image reach this exact size, though enlarging cannot add detail"
+            : "Enlarging cannot add detail, so this is off by default"
+        }
         checked={resize.allowUpscale}
         onCheckedChange={(allowUpscale) =>
           setResize({
@@ -406,6 +468,36 @@ export function ResizeOptions({ settings, onChange, reference }: PanelProps) {
           })
         }
       />
+
+      <OptionGroup
+        label="Maximum file size"
+        hint="Optional. Application forms often set a limit."
+      >
+        <div className="flex items-center gap-2">
+          <Input
+            id="resize-max-kb"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            value={settings.maxFileKb ?? ""}
+            placeholder="No limit"
+            aria-label="Maximum file size in KB"
+            onChange={(event) => {
+              const raw = event.target.value;
+              onChange({
+                maxFileKb:
+                  raw === "" ? null : Math.max(1, Number.parseInt(raw, 10) || 1),
+              });
+            }}
+          />
+          <span className="text-sm text-muted-foreground">KB</span>
+        </div>
+        {settings.maxFileKb && settings.format === "auto" && sourceFormats.includes("png") ? (
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            PNG images are saved as JPG to fit a limit. Any transparent areas turn white.
+          </p>
+        ) : null}
+      </OptionGroup>
     </div>
   );
 }

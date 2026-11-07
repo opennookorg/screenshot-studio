@@ -214,7 +214,7 @@ function StoreHeader({
             <GitHubStarButton compact />
           </div>
           <a
-            href="https://x.com/code_kartik"
+            href="https://x.com/screenshotstdio"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow Screenshot Studio on X"

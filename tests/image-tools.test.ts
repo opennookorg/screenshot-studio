@@ -6,7 +6,11 @@ import {
   centeredCropForRatio,
   clampCropRect,
   computeResizeDimensions,
+  coverCropForResize,
   dimensionsAfterRotation,
+  MAX_CROP_ZOOM,
+  moveCropPlacement,
+  zoomCropPlacement,
   fitWithin,
   matchLockedAxis,
   normalizeAngle,
@@ -20,6 +24,12 @@ import {
   polygonBounds,
   resolveFreehand,
 } from "../lib/image-tools/freehand";
+import {
+  findResizeTemplate,
+  RESIZE_TEMPLATE_GROUPS,
+  searchResizeTemplates,
+} from "../lib/image-tools/resize-templates";
+import { BYTES_PER_KB, encodeWithinLimit } from "../lib/image-tools/size-limit";
 import {
   clampQuality,
   extensionFor,
@@ -40,8 +50,11 @@ import {
   uniqueFilename,
 } from "../lib/image-tools/filename";
 import {
+  applyResizeTemplate,
   buildOutputName,
   buildProcessOptions,
+  clearResizeTemplate,
+  resolveToolFormat,
   resolveOutputFormat,
   DEFAULT_REENCODE_QUALITY,
   DEFAULT_RESIZE,
@@ -369,6 +382,200 @@ test("a line that only skims an edge is not offered as a cut", () => {
     { x: 1500, y: 2 },
   ];
   assert.equal(resolveFreehand(skim, SOURCE, THRESHOLDS), null);
+});
+
+test("resize templates convert physical sizes at 300 DPI", () => {
+  const size = (id: string) => {
+    const template = findResizeTemplate(id)!.template;
+    return [template.width, template.height];
+  };
+  assert.deepEqual(size("passport-us"), [600, 600]);
+  assert.deepEqual(size("passport-35x45"), [413, 531]);
+  assert.deepEqual(size("passport-canada"), [591, 827]);
+  assert.deepEqual(size("print-a4"), [2480, 3508]);
+  assert.deepEqual(size("print-letter"), [2550, 3300]);
+});
+
+test("every resize template has a unique id and a usable size", () => {
+  const templates = RESIZE_TEMPLATE_GROUPS.flatMap((group) => group.templates);
+  assert.equal(new Set(templates.map(({ id }) => id)).size, templates.length);
+  for (const { id, width, height } of templates) {
+    assert.ok(Number.isInteger(width) && width > 0, id);
+    assert.ok(Number.isInteger(height) && height > 0, id);
+  }
+});
+
+test("template search matches every word in any order and drops empty groups", () => {
+  const ids = (query: string) =>
+    searchResizeTemplates(query).flatMap((group) => group.templates.map(({ id }) => id));
+  assert.deepEqual(ids("india passport"), ["passport-india"]);
+  assert.deepEqual(ids("passport india"), ["passport-india"]);
+  assert.ok(ids("twitter").includes("x-header"));
+  assert.deepEqual(ids("600x750"), ["passport-uk-digital"]);
+  assert.deepEqual(searchResizeTemplates("nothing like this"), []);
+  assert.equal(searchResizeTemplates("  "), RESIZE_TEMPLATE_GROUPS);
+});
+
+test("applying a template crops to an exact size and can enlarge", () => {
+  const applied = applyResizeTemplate(DEFAULT_RESIZE, findResizeTemplate("passport-india")!);
+  assert.equal(applied.resizeTemplateId, "passport-india");
+  assert.equal(applied.format, "jpeg");
+  assert.equal(applied.resize.cropToFit, true);
+  assert.equal(applied.resize.allowUpscale, true);
+  assert.equal(applied.resize.lockAspectRatio, false);
+
+  const social = applyResizeTemplate(applied.resize, findResizeTemplate("x-post")!);
+  assert.equal(social.format, "auto");
+
+  const cleared = clearResizeTemplate(applied.resize);
+  assert.equal(cleared.resizeTemplateId, null);
+  assert.equal(cleared.format, "auto");
+  assert.deepEqual(cleared.resize, DEFAULT_RESIZE);
+});
+
+test("a crop-to-fit resize is exact, in any shape, including an edited size", () => {
+  const { resize } = applyResizeTemplate(DEFAULT_RESIZE, findResizeTemplate("instagram-square")!);
+  const crop = coverCropForResize(SOURCE, resize)!;
+  assert.deepEqual(crop, { x: 350, y: 0, width: 900, height: 900 });
+  assert.deepEqual(computeResizeDimensions(crop, resize), { width: 1080, height: 1080 });
+
+  const edited = { ...resize, width: 500, height: 250 };
+  const editedCrop = coverCropForResize(SOURCE, edited)!;
+  assert.equal(editedCrop.width / editedCrop.height, 2);
+  assert.deepEqual(computeResizeDimensions(editedCrop, edited), { width: 500, height: 250 });
+});
+
+test("a crop placement positions the crop within the spare room", () => {
+  const { resize } = applyResizeTemplate(DEFAULT_RESIZE, findResizeTemplate("instagram-square")!);
+  const at = (x: number, y: number) =>
+    coverCropForResize(SOURCE, { ...resize, cropPlacement: { x, y, zoom: 1 } })!;
+  assert.deepEqual(at(0, 0.5), { x: 0, y: 0, width: 900, height: 900 });
+  assert.deepEqual(at(1, 0.5), { x: 700, y: 0, width: 900, height: 900 });
+  assert.deepEqual(at(0.5, 0.5), coverCropForResize(SOURCE, resize));
+  // The placement is a fraction, so it stays put when the target shape changes.
+  const tall = coverCropForResize(SOURCE, {
+    ...resize,
+    width: 300,
+    height: 900,
+    cropPlacement: { x: 1, y: 0, zoom: 1 },
+  })!;
+  assert.equal(tall.x + tall.width, SOURCE.width);
+});
+
+test("moving a crop stops at the edges and ignores an axis with no room", () => {
+  const crop = { width: 900, height: 900 };
+  const start = { x: 0.5, y: 0.5, zoom: 1 };
+  assert.deepEqual(moveCropPlacement(start, 350, 100, SOURCE, crop), { x: 1, y: 0.5, zoom: 1 });
+  assert.deepEqual(moveCropPlacement(start, -5000, 0, SOURCE, crop), { x: 0, y: 0.5, zoom: 1 });
+  assert.deepEqual(moveCropPlacement(start, 175, 0, SOURCE, crop), { x: 0.75, y: 0.5, zoom: 1 });
+});
+
+test("zooming keeps the crop's shape and exact output size", () => {
+  const { resize } = applyResizeTemplate(DEFAULT_RESIZE, findResizeTemplate("instagram-square")!);
+  const crop = coverCropForResize(SOURCE, { ...resize, cropPlacement: { x: 0.5, y: 0.5, zoom: 2 } })!;
+  assert.deepEqual(crop, { x: 575, y: 225, width: 450, height: 450 });
+  assert.deepEqual(computeResizeDimensions(crop, resize), { width: 1080, height: 1080 });
+});
+
+test("zooming holds the crop's centre still and stays inside the image", () => {
+  const { resize } = applyResizeTemplate(DEFAULT_RESIZE, findResizeTemplate("instagram-square")!);
+  const cropAt = (cropPlacement: { x: number; y: number; zoom: number }) =>
+    coverCropForResize(SOURCE, { ...resize, cropPlacement })!;
+
+  // Hard left at zoom 1 has its centre at x=450. Zooming in must not drift off it.
+  const start = { x: 0, y: 0.5, zoom: 1 };
+  const zoomed = zoomCropPlacement(start, 2, SOURCE, resize);
+  const crop = cropAt(zoomed);
+  assert.equal(crop.x + crop.width / 2, 450);
+  assert.equal(crop.y + crop.height / 2, 450);
+
+  // Zooming back out has to slide back inside the image.
+  assert.deepEqual(cropAt(zoomCropPlacement(zoomed, 1, SOURCE, resize)), {
+    x: 0,
+    y: 0,
+    width: 900,
+    height: 900,
+  });
+
+  assert.equal(zoomCropPlacement(start, 99, SOURCE, resize).zoom, MAX_CROP_ZOOM);
+  assert.equal(zoomCropPlacement(start, 0.2, SOURCE, resize).zoom, 1);
+});
+
+/** Fake encoder: quality 1 makes a 1000-byte file. Records every attempt. */
+function fakeEncoder(minSize = 0) {
+  const attempts: number[] = [];
+  const encode = async (quality: number) => {
+    attempts.push(quality);
+    return { size: Math.max(minSize, quality * 1000), quality };
+  };
+  return { encode, attempts };
+}
+
+test("a size limit leaves a file alone when it already fits", async () => {
+  const { encode, attempts } = fakeEncoder();
+  const { blob, overLimit } = await encodeWithinLimit(encode, 0.9, 950, true);
+  assert.equal(blob.quality, 0.9);
+  assert.equal(overLimit, false);
+  assert.equal(attempts.length, 1);
+});
+
+test("no size limit means one encode at the requested quality", async () => {
+  const { encode, attempts } = fakeEncoder();
+  assert.equal((await encodeWithinLimit(encode, 0.9, null, true)).blob.quality, 0.9);
+  assert.equal(attempts.length, 1);
+});
+
+test("a size limit finds a high quality that fits", async () => {
+  const { encode } = fakeEncoder();
+  const { blob, overLimit } = await encodeWithinLimit(encode, 0.9, 500, true);
+  assert.equal(overLimit, false);
+  assert.ok(blob.size <= 500);
+  assert.ok(blob.size > 480, `quality search stopped early at ${blob.size}`);
+});
+
+test("an impossible size limit reports it and returns the smallest file", async () => {
+  const { encode } = fakeEncoder(700);
+  const { blob, overLimit } = await encodeWithinLimit(encode, 0.9, 500, true);
+  assert.equal(overLimit, true);
+  assert.equal(blob.size, 700);
+});
+
+test("a lossless format over its limit gets one attempt and is flagged", async () => {
+  const { encode, attempts } = fakeEncoder();
+  const { overLimit } = await encodeWithinLimit(encode, 1, 500, false);
+  assert.equal(overLimit, true);
+  assert.equal(attempts.length, 1);
+});
+
+test("a size limit moves PNG to JPEG and only applies to resize", () => {
+  const limited = { ...DEFAULT_TOOL_SETTINGS, maxFileKb: 50 };
+  assert.equal(resolveToolFormat("resize", limited, "image/png"), "jpeg");
+  assert.equal(resolveToolFormat("resize", limited, "image/webp"), "webp");
+  assert.equal(resolveToolFormat("resize", DEFAULT_TOOL_SETTINGS, "image/png"), "png");
+  assert.equal(resolveToolFormat("rotate", limited, "image/png"), "png");
+
+  const options = buildProcessOptions("resize", limited, "image/png");
+  assert.equal(options.encode.format, "jpeg");
+  assert.equal(options.encode.maxBytes, 50 * BYTES_PER_KB);
+  assert.equal(buildProcessOptions("rotate", limited, "image/png").encode.maxBytes, null);
+});
+
+test("only a pixel resize with both axes crops to fit", () => {
+  const resize = { ...DEFAULT_RESIZE, width: 100, height: 100 };
+  assert.equal(coverCropForResize(SOURCE, resize), null);
+  assert.equal(coverCropForResize(SOURCE, { ...resize, cropToFit: true, mode: "percentage" }), null);
+  assert.equal(coverCropForResize(SOURCE, { ...resize, cropToFit: true, width: null }), null);
+});
+
+test("a template with an emptied box scales proportionally rather than stretching", () => {
+  const { resize } = applyResizeTemplate(DEFAULT_RESIZE, findResizeTemplate("x-post")!);
+  const options = buildProcessOptions(
+    "resize",
+    { ...DEFAULT_TOOL_SETTINGS, resize: { ...resize, height: null } },
+    "image/png"
+  );
+  assert.equal(options.resize?.cropToFit, false);
+  assert.equal(options.resize?.lockAspectRatio, true);
 });
 
 test("fitWithin shrinks to the box but never enlarges", () => {

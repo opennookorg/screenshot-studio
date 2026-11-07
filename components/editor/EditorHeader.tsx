@@ -565,7 +565,7 @@ export function EditorHeader() {
           </Button>
           {!isMobile ? <span className="hidden 2xl:inline-flex"><GitHubStarButton compact /></span> : null}
           <a
-            href="https://x.com/code_kartik"
+            href="https://x.com/screenshotstdio"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow on X"
