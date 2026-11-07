@@ -233,7 +233,7 @@ export default function AboutPage() {
               Built By
             </h2>
             <p className="leading-relaxed text-muted-foreground">
-              Created and maintained by{" "}
+              Created by{" "}
               <Link
                 href="https://x.com/code_kartik"
                 target="_blank"
@@ -242,8 +242,17 @@ export default function AboutPage() {
               >
                 Kartik Labhshetwar
               </Link>
-              , an independent developer, with contributions from the
-              open-source community on GitHub. You can reach Kartik at{" "}
+              , an independent developer, and maintained together with{" "}
+              <Link
+                href="https://x.com/aniketrawat00"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={linkClassName}
+              >
+                Aniket Rawat
+              </Link>
+              , with contributions from the open-source community on GitHub.
+              You can reach Kartik at{" "}
               <Link
                 href="mailto:kartik.labhshetwar@gmail.com"
                 className={linkClassName}

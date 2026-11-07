@@ -201,9 +201,9 @@ export const TOOLS: ToolDefinition[] = [
     engine: "resize",
     name: "Resize Image",
     h1: "Resize Image",
-    title: "Resize Image Online: Pixels or Percent",
+    title: "Resize Image: Passport & Social Sizes",
     description:
-      "Resize images by pixel size or percentage with the aspect ratio locked. Batch resize in your browser. Free, no signup, no upload.",
+      "Resize images online to exact pixels or ready-made sizes like passport photos and Instagram posts. Set a max file size. Free, no signup, no upload.",
     keywords: [
       "resize image",
       "resize image online",
@@ -213,23 +213,39 @@ export const TOOLS: ToolDefinition[] = [
       "bulk image resizer",
       "resize image by percentage",
       "resize image in pixels",
+      "resize photo to passport size",
+      "resize image for instagram",
+      "resize image to kb",
       "scale image online",
       "free image resizer",
     ],
     intro:
-      "Set an exact width and height, or scale by a percentage, and resize one image or a hundred. The aspect ratio stays locked unless you unlock it, and images are downscaled in steps so text stays sharp.",
+      "Pick a ready-made size like a passport photo or Instagram post, set an exact width and height, or scale by a percentage. Resize one image or a hundred, and images are downscaled in steps so text stays sharp.",
     features: [
+      "Ready-made sizes for passport photos, social media, print, and screens",
+      "Every template size stays editable, and you can move and zoom the crop on each image",
+      "Optional maximum file size for application forms",
       "Resize by exact pixels or by percentage",
       "Aspect ratio lock with automatic second axis",
-      "Optional upscaling, off by default",
+      "Optional upscaling, off by default for custom sizes",
       "Stepped downscaling that keeps screenshot text legible",
       "Batch resize with a single zip download",
     ],
     faqs: [
       {
+        question: "Can I resize a photo to passport size?",
+        answer:
+          "Yes. Choose a template such as US passport or 35 by 45 mm, drag and zoom the frame to choose what stays, and the photo is cropped and resized to that exact size. You can also set a maximum file size if the form has one. Templates set the size only, so check the official rules for background and head size before you submit.",
+      },
+      {
+        question: "Can I resize a photo to a specific file size in KB?",
+        answer:
+          "Yes. Type a maximum file size and the quality is lowered just enough to fit, while the width and height stay exactly as you set them. PNG files are saved as JPG to fit, because PNG cannot shrink by lowering quality. If the limit cannot be reached at that size, you get the smallest possible file and a warning.",
+      },
+      {
         question: "Will resizing make my image blurry?",
         answer:
-          "Downscaling is done in successive halving steps rather than one large jump, which preserves far more detail than a single resize. The difference is obvious on screenshots containing small text. Upscaling cannot invent detail, so it is switched off by default; enable it only when you need to hit a specific pixel size.",
+          "Downscaling is done in successive halving steps rather than one large jump, which preserves far more detail than a single resize. The difference is obvious on screenshots containing small text. Upscaling cannot invent detail, so it is off by default for custom sizes. Templates turn it on so a small image can still reach the exact size, and warn you when the result may look soft.",
       },
       {
         question: "How do I keep the aspect ratio?",
@@ -239,7 +255,7 @@ export const TOOLS: ToolDefinition[] = [
       {
         question: "Can I resize images to the same size in bulk?",
         answer:
-          "Yes. Drop in a batch, set one target width, and every image is resized to that width with its own height derived from its aspect ratio. Percentage mode scales each image relative to its own size instead.",
+          "Yes. Drop in a batch, set one target width, and every image is resized to that width with its own height derived from its aspect ratio. Choose a template instead and every image comes out at exactly that size, with its own crop you can adjust. Percentage mode scales each image relative to its own size.",
       },
       PRIVACY_FAQ,
       FREE_FAQ,
@@ -247,11 +263,11 @@ export const TOOLS: ToolDefinition[] = [
     sections: [
       {
         heading: "How to resize an image",
-        body: "Drop in one image or a batch. Choose Pixels to set an exact width or height, or Percentage to scale every image relative to its own size. With the aspect ratio locked, type one dimension and the other is calculated for you. Leave upscaling off unless you specifically need a larger file, then download each image or a zip of all of them.",
+        body: "Drop in one image or a batch. Pick a template for a ready-made size, then drag and zoom the frame to choose what stays. Or choose Pixels to set an exact width or height, or Percentage to scale every image relative to its own size. With the aspect ratio locked, type one dimension and the other is calculated for you. Leave upscaling off unless you specifically need a larger file, then download each image or a zip of all of them.",
       },
       {
         heading: "Common target sizes",
-        body: "A full-width website image rarely needs to be wider than 1920 pixels, and an image inside an article column rarely more than 1200. Link previews on most social networks use 1200 by 630. Instagram posts are 1080 pixels wide, square at 1080 by 1080 or portrait at 1080 by 1350. YouTube thumbnails are 1280 by 720. When a size has a different shape from your image, resize to the right width first and then crop to the exact ratio with the crop tool.",
+        body: "A full-width website image rarely needs to be wider than 1920 pixels, and an image inside an article column rarely more than 1200. Link previews on most social networks use 1200 by 630. Instagram posts are 1080 pixels wide, square at 1080 by 1080 or portrait at 1080 by 1350. YouTube thumbnails are 1280 by 720. All of these are templates, along with passport photos, print sizes, and banners. When a size has a different shape from your image, the template crops to fit and you choose which part to keep.",
       },
       {
         heading: "Sizing for high-density screens",
@@ -266,9 +282,9 @@ export const TOOLS: ToolDefinition[] = [
     engine: "crop",
     name: "Crop Image",
     h1: "Crop Image",
-    title: "Crop Image Online: Free Ratio Presets",
+    title: "Crop Image Online: Freehand & Ratios",
     description:
-      "Crop an image by dragging a selection or typing exact pixels. Social media ratio presets included. Free, in your browser, no upload.",
+      "Crop an image by dragging a selection, typing exact pixels, or drawing any shape by hand for a transparent cutout. Free, in your browser, no upload.",
     keywords: [
       "crop image",
       "crop image online",
@@ -280,12 +296,16 @@ export const TOOLS: ToolDefinition[] = [
       "free image cropper",
       "crop screenshot",
       "crop image without uploading",
+      "freehand crop",
+      "crop image in any shape",
     ],
     intro:
-      "Drag a selection over your image or type exact pixel values. Ratio presets cover square, 16:9, 4:3, and the common social sizes, and the crop is applied at full source resolution.",
+      "Drag a selection over your image, type exact pixel values, or draw any shape by hand. Ratio presets cover square, 16:9, 4:3, and the common social sizes, and the crop is applied at full source resolution.",
     features: [
       "Drag to select, or enter exact pixel coordinates",
       "Freehand mode: draw around any shape and get a transparent cutout",
+      "Draw a line across the image and click the side to keep",
+      "Eraser brush to remove leftover bits from a cutout",
       "Ratio presets: free, square, 16:9, 4:3, 3:2, 9:16",
       "Cropped at full source resolution, not preview resolution",
       "Live output dimensions as you drag",
@@ -298,9 +318,14 @@ export const TOOLS: ToolDefinition[] = [
           "Only by the amount you crop away. The selection is mapped back onto the original pixels, so cropping the middle 50% of a 4000px-wide image gives you a 2000px-wide result at full quality, not a scaled-down preview.",
       },
       {
+        question: "Can I crop an image in a custom shape?",
+        answer:
+          "Yes. Switch to Freehand and draw around the part you want with your mouse or finger, and everything outside it becomes transparent. Draw a line from one edge to another to split the image, then click the side to keep. An eraser brush removes anything left over. JPG files are saved as PNG, because JPG cannot store transparency.",
+      },
+      {
         question: "Can I crop to a specific aspect ratio?",
         answer:
-          "Yes. Pick a ratio preset and the selection is constrained to it while you drag. Choose Free to crop to any shape.",
+          "Yes. Pick a ratio preset and the selection is constrained to it while you drag. Choose Free for a rectangle of any proportions.",
       },
       {
         question: "Can I crop several images at once?",
@@ -313,7 +338,7 @@ export const TOOLS: ToolDefinition[] = [
     sections: [
       {
         heading: "How to crop an image",
-        body: "Drop in an image and pick a ratio preset, or Free for any shape. Drag the selection over the part you want to keep, or type the exact position and size in pixels. The output dimensions update as you drag. When you download, the crop is applied to the original full-resolution pixels, not to the preview on screen.",
+        body: "Drop in an image and pick a ratio preset, or Free for no fixed ratio. Drag the selection over the part you want to keep, or type the exact position and size in pixels. For a shape that is not a rectangle, switch to Freehand and draw it by hand. The output dimensions update as you drag. When you download, the crop is applied to the original full-resolution pixels, not to the preview on screen.",
       },
       {
         heading: "Which ratio to use",

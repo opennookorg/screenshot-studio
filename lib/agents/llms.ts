@@ -199,8 +199,10 @@ Built as a free alternative to paid tools like Pika Style, Shots.so, and CleanSh
 ### Standalone Image Tools
 - Compress: light, balanced, strong, and extreme levels
 - Convert: PNG, JPG, and WebP, with a chosen background behind transparency
-- Resize: by exact pixels or percentage, with stepped downscaling
+- Resize: by exact pixels or percentage, with stepped downscaling, or a template for passport photos, social media, print, and screens
+- Resize extras: editable template sizes, a movable and zoomable crop for each image, and an optional maximum file size
 - Crop: drag or type, with 1:1, 16:9, 4:3, 3:2, and 9:16 presets
+- Crop freehand: draw any shape for a transparent cutout, split the image with a line, and erase leftovers with a brush
 - Rotate and flip: 90, 180, 270 degrees plus mirroring
 - Batch input for every tool except crop, downloaded as a zip
 - All of it runs in the browser and calls no API
@@ -270,8 +272,8 @@ Standalone, single-purpose utilities. Each decodes, processes, and re-encodes th
 |------|-----|-------------|
 | Compress Image | ${BASE_URL}/compress-image | Four compression levels with before and after sizes |
 | Convert Image | ${BASE_URL}/convert-image | PNG, JPG, and WebP in every direction |
-| Resize Image | ${BASE_URL}/resize-image | Exact pixels or percentage, aspect ratio locked by default |
-| Crop Image | ${BASE_URL}/crop-image | Drag a selection or type pixels, with ratio presets |
+| Resize Image | ${BASE_URL}/resize-image | Exact pixels, percentage, or templates such as passport photos and social sizes, with an optional maximum file size |
+| Crop Image | ${BASE_URL}/crop-image | Drag a selection, type pixels, or draw a freehand shape for a transparent cutout |
 | Rotate Image | ${BASE_URL}/rotate-image | Quarter turns plus horizontal and vertical flips |
 | PNG to JPG | ${BASE_URL}/png-to-jpg | Direct converter with a background colour for transparency |
 | JPG to PNG | ${BASE_URL}/jpg-to-png | Direct converter to a lossless format |

@@ -6,6 +6,7 @@
  */
 
 import type {
+  CropPlacement,
   CropRect,
   Dimensions,
   ResizeOptions,
@@ -176,6 +177,89 @@ export function centeredCropForRatio(
     source,
     ratio
   );
+}
+
+export const DEFAULT_CROP_PLACEMENT: CropPlacement = { x: 0.5, y: 0.5, zoom: 1 };
+
+export const MAX_CROP_ZOOM = 5;
+
+/**
+ * The crop that gives `source` the shape of a crop-to-fit resize, sized and
+ * positioned by its placement, or null when this resize is not one. Lives apart
+ * from the batch plan because each image in a batch has its own size.
+ */
+export function coverCropForResize(
+  source: Dimensions,
+  options: ResizeOptions
+): CropRect | null {
+  if (!options.cropToFit || options.mode !== "pixels") return null;
+  if (!options.width || !options.height) return null;
+  const largest = centeredCropForRatio(source, options.width / options.height);
+  const { x, y, zoom } = options.cropPlacement ?? DEFAULT_CROP_PLACEMENT;
+  const width = largest.width / zoom;
+  const height = largest.height / zoom;
+  return clampCropRect(
+    {
+      x: (source.width - width) * x,
+      y: (source.height - height) * y,
+      width,
+      height,
+    },
+    source
+  );
+}
+
+/** Fraction of the spare room on one axis; an axis with none keeps `fallback`. */
+function shareOfRoom(offset: number, room: number, fallback: number): number {
+  return room > 0 ? Math.min(1, Math.max(0, offset / room)) : fallback;
+}
+
+/**
+ * Moves a crop by a drag measured in source pixels. A crop with no spare room on
+ * an axis cannot move along it.
+ */
+export function moveCropPlacement(
+  placement: CropPlacement,
+  deltaX: number,
+  deltaY: number,
+  source: Dimensions,
+  crop: Dimensions
+): CropPlacement {
+  const roomX = source.width - crop.width;
+  const roomY = source.height - crop.height;
+  return {
+    ...placement,
+    x: shareOfRoom(placement.x * roomX + deltaX, roomX, placement.x),
+    y: shareOfRoom(placement.y * roomY + deltaY, roomY, placement.y),
+  };
+}
+
+/**
+ * Changes the zoom while holding the crop's centre still, so the part the user
+ * lined up stays in the frame. Near an edge the crop slides just enough to stay
+ * inside the image.
+ */
+export function zoomCropPlacement(
+  placement: CropPlacement,
+  zoom: number,
+  source: Dimensions,
+  options: ResizeOptions
+): CropPlacement {
+  const nextZoom = Math.min(MAX_CROP_ZOOM, Math.max(1, zoom));
+  const current = coverCropForResize(source, { ...options, cropPlacement: placement });
+  const next = coverCropForResize(source, {
+    ...options,
+    cropPlacement: { ...DEFAULT_CROP_PLACEMENT, zoom: nextZoom },
+  });
+  if (!current || !next) return placement;
+
+  const centerX = current.x + current.width / 2;
+  const centerY = current.y + current.height / 2;
+  return {
+    x: shareOfRoom(centerX - next.width / 2, source.width - next.width, placement.x),
+    y: shareOfRoom(centerY - next.height / 2, source.height - next.height, placement.y),
+    zoom: nextZoom,
+  };
 }
 
 /** Scales `source` down to fit inside `box`, never up. Used for previews. */

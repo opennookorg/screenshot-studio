@@ -266,13 +266,13 @@ const TASKS = [
   {
     href: "/resize-image",
     title: "Resize images",
-    description: "Set exact pixels or a percentage, with the ratio kept.",
+    description: "Use ready-made sizes like passport photos, or set your own.",
     preview: <ResizePreview />,
   },
   {
     href: "/crop-image",
     title: "Crop an image",
-    description: "Drag a frame or pick square, 16:9, and more.",
+    description: "Drag a frame, pick square or 16:9, or draw any shape.",
     preview: <CropPreview />,
   },
   {

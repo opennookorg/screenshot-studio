@@ -11,6 +11,48 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "November 7, 2026",
+    version: "2.10.0",
+    title: "Resize Templates",
+    description:
+      "Resize images to ready-made sizes like passport photos, Instagram posts, and A4 at /resize-image, and choose exactly which part of each image to keep.",
+    changes: [
+      {
+        type: "added",
+        text: "Templates for passport and ID photos, social media, print, and screens, with search",
+      },
+      {
+        type: "added",
+        text: "Drag and zoom the crop on each image, and edit any template's size",
+      },
+      {
+        type: "added",
+        text: "Optional maximum file size in KB, for application forms",
+      },
+    ],
+  },
+  {
+    date: "October 18, 2026",
+    version: "2.9.0",
+    title: "Freehand Crop",
+    description:
+      "Crop an image by drawing on it at /crop-image, and download a transparent cutout of any shape.",
+    changes: [
+      {
+        type: "added",
+        text: "Freehand mode: draw around any shape with your mouse or finger",
+      },
+      {
+        type: "added",
+        text: "Draw a line from edge to edge, then click the side to keep",
+      },
+      {
+        type: "added",
+        text: "Eraser brush with adjustable size and undo",
+      },
+    ],
+  },
+  {
     date: "October 10, 2026",
     version: "2.8.0",
     title: "Video Compressor",

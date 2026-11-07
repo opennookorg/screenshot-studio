@@ -6,18 +6,22 @@
 import {
   formatFromExtension,
   formatFromMime,
+  isLossy,
   qualityForLevel,
   type CompressionLevel,
 } from "./format";
 import { extensionOf, outputFilename, sanitizeFilename } from "./filename";
 import { IDENTITY_TRANSFORM } from "./types";
 import type {
+  CropPlacement,
   CropRect,
   ProcessOptions,
   RasterFormat,
   ResizeOptions,
   TransformOptions,
 } from "./types";
+import type { ResizeTemplateSelection } from "./resize-templates";
+import { BYTES_PER_KB } from "./size-limit";
 
 /** Every tool that produces a downloadable file, including the interactive one. */
 export type ToolEngineName = "compress" | "convert" | "resize" | "crop" | "rotate";
@@ -52,6 +56,10 @@ export interface ToolSettings {
   /** Colour painted behind transparency when the target has no alpha channel. */
   background: string;
   resize: ResizeOptions;
+  /** Resize: the template the size came from, kept while its numbers are edited. */
+  resizeTemplateId: string | null;
+  /** Resize: largest file to produce, in KB. Null means no limit. */
+  maxFileKb: number | null;
   transform: TransformOptions;
   crop: CropRect | null;
 }
@@ -63,6 +71,7 @@ export const DEFAULT_RESIZE: ResizeOptions = {
   percentage: 100,
   lockAspectRatio: true,
   allowUpscale: false,
+  cropToFit: false,
 };
 
 export const DEFAULT_TOOL_SETTINGS: ToolSettings = {
@@ -72,9 +81,78 @@ export const DEFAULT_TOOL_SETTINGS: ToolSettings = {
   useCustomQuality: false,
   background: "#ffffff",
   resize: DEFAULT_RESIZE,
+  resizeTemplateId: null,
+  maxFileKb: null,
   transform: IDENTITY_TRANSFORM,
   crop: null,
 };
+
+/**
+ * Settings for a resize template. A template promises an exact size, so it
+ * crops rather than stretches and is allowed to enlarge a small image.
+ */
+export function applyResizeTemplate(
+  resize: ResizeOptions,
+  { template, group }: ResizeTemplateSelection
+): Pick<ToolSettings, "resize" | "resizeTemplateId" | "format"> {
+  return {
+    resizeTemplateId: template.id,
+    format: group.format ?? "auto",
+    resize: {
+      ...resize,
+      mode: "pixels",
+      width: template.width,
+      height: template.height,
+      lockAspectRatio: false,
+      allowUpscale: true,
+      cropToFit: true,
+    },
+  };
+}
+
+/** Back to a hand-typed size, with the form's normal defaults. */
+export function clearResizeTemplate(
+  resize: ResizeOptions
+): Pick<ToolSettings, "resize" | "resizeTemplateId" | "format"> {
+  return {
+    resizeTemplateId: null,
+    format: "auto",
+    resize: {
+      ...resize,
+      width: null,
+      height: null,
+      lockAspectRatio: true,
+      allowUpscale: false,
+      cropToFit: false,
+    },
+  };
+}
+
+/**
+ * The format a batch tool will actually write. Lossless files cannot be squeezed
+ * by lowering quality, so a size limit moves them to JPEG; otherwise the limit
+ * could only ever fail.
+ */
+export function resolveToolFormat(
+  engine: BatchToolEngine,
+  settings: ToolSettings,
+  sourceMime: string
+): RasterFormat {
+  const format = resolveOutputFormat(settings.format, sourceMime);
+  return engine === "resize" && settings.maxFileKb && !isLossy(format)
+    ? "jpeg"
+    : format;
+}
+
+/**
+ * Crop-to-fit needs both axes. With one box left empty while editing a template
+ * there is no shape to crop to, so the image scales proportionally instead of
+ * being stretched.
+ */
+function resolveResize(resize: ResizeOptions): ResizeOptions {
+  if (!resize.cropToFit || (resize.width && resize.height)) return resize;
+  return { ...resize, cropToFit: false, lockAspectRatio: true };
+}
 
 /** Suffix appended only when the output would otherwise overwrite the input. */
 const ENGINE_SUFFIX: Record<ToolEngineName, string> = {
@@ -116,18 +194,26 @@ function resolveQuality(
 export function buildProcessOptions(
   engine: BatchToolEngine,
   settings: ToolSettings,
-  sourceMime: string
+  sourceMime: string,
+  cropPlacement?: CropPlacement | null
 ): ProcessOptions {
-  const format = resolveOutputFormat(settings.format, sourceMime);
+  const format = resolveToolFormat(engine, settings, sourceMime);
 
   return {
     crop: null,
     transform: engine === "rotate" ? settings.transform : null,
-    resize: engine === "resize" ? settings.resize : null,
+    resize:
+      engine === "resize"
+        ? { ...resolveResize(settings.resize), cropPlacement: cropPlacement ?? null }
+        : null,
     encode: {
       format,
       quality: resolveQuality(engine, settings, format),
       background: settings.background,
+      maxBytes:
+        engine === "resize" && settings.maxFileKb
+          ? settings.maxFileKb * BYTES_PER_KB
+          : null,
     },
   };
 }

@@ -15,7 +15,7 @@ A free, open-source editor for screenshots, mockups, and social graphics. No sig
 - **Layered compositions:** text, images, annotations, and blur regions.
 - **Store and social assets:** ready-made layouts and exact export sizes, including Chrome Web Store screenshots.
 - **Images and motion:** PNG, JPEG, WebP, batch ZIP, MP4, WebM, and GIF exports.
-- **Quick edits:** resize, crop, convert, compress, and remove image backgrounds.
+- **Quick edits:** resize to ready-made sizes like passport photos, crop by hand, convert, compress, and remove image backgrounds.
 
 ## Run locally
 
@@ -34,5 +34,7 @@ Open [localhost:3000](http://localhost:3000). The browser editor needs no runnin
 ## Contribute
 
 Read [CONTRIBUTING.md](./CONTRIBUTING.md) for the workflow and checks. Built with Next.js, React, TypeScript, Tailwind CSS, and Zustand.
+
+Created by [Kartik Labhshetwar](https://github.com/KartikLabhshetwar) and maintained together with [Aniket Rawat](https://github.com/AniketR10).
 
 [Apache 2.0 license](./LICENSE) · Supported by the [Vercel OSS Program](https://vercel.com/oss)

@@ -48,6 +48,13 @@ export function getOrganizationSchema() {
       "https://x.com/screenshotstdio",
     ],
     founder: { "@id": PERSON_ID },
+    member: [
+      {
+        "@type": "Person",
+        name: "Aniket Rawat",
+        sameAs: ["https://x.com/aniketrawat00", "https://github.com/AniketR10"],
+      },
+    ],
     email: "kartik.labhshetwar@gmail.com",
     address: {
       "@type": "PostalAddress",

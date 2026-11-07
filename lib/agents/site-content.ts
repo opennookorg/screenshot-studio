@@ -126,8 +126,8 @@ export const AGENT_PAGES: AgentPage[] = [
     points: [
       "Compress: four levels, live before and after file sizes",
       "Convert: PNG, JPG, and WebP in every direction",
-      "Resize: exact pixels or percentage, aspect ratio locked by default",
-      "Crop: drag a selection or type exact pixels, with ratio presets",
+      "Resize: exact pixels, percentage, or templates such as passport photos and social sizes, with an optional maximum file size",
+      "Crop: drag a selection, type exact pixels, or draw a freehand shape for a transparent cutout",
       "Rotate and flip: quarter turns plus horizontal and vertical mirroring",
     ],
   },

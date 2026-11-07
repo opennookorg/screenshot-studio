@@ -9,6 +9,8 @@ export * from "./types";
 export * from "./format";
 export * from "./geometry";
 export * from "./freehand";
+export * from "./resize-templates";
+export * from "./size-limit";
 export * from "./filename";
 export * from "./plan";
 

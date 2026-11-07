@@ -43,6 +43,18 @@ export interface EraseStroke {
   radius: number;
 }
 
+/**
+ * Where a crop-to-fit sits and how tight it is. Fractions rather than pixels, so
+ * it survives the target size changing.
+ */
+export interface CropPlacement {
+  /** Position within the spare room, from 0 to 1 on each axis. */
+  x: number;
+  y: number;
+  /** 1 is the largest crop that fits; 2 keeps half the width and height. */
+  zoom: number;
+}
+
 /** Quarter-turn rotation, clockwise, in degrees. */
 export type RotateAngle = 0 | 90 | 180 | 270;
 
@@ -65,6 +77,13 @@ export interface ResizeOptions {
   lockAspectRatio: boolean;
   /** When false, a target larger than the source is clamped to the source size. */
   allowUpscale: boolean;
+  /**
+   * Hits the exact width and height by centre-cropping whatever does not fit,
+   * rather than stretching. Needs both axes; used when mode is "pixels".
+   */
+  cropToFit?: boolean;
+  /** Defaults to the largest crop that fits, centred. */
+  cropPlacement?: CropPlacement | null;
 }
 
 export interface EncodeOptions {
@@ -76,6 +95,8 @@ export interface EncodeOptions {
    * without an alpha channel (jpeg) so transparency does not turn black.
    */
   background?: string;
+  /** Lowers quality until the file fits. Dimensions are left alone. */
+  maxBytes?: number | null;
 }
 
 export interface ProcessOptions {
@@ -97,6 +118,8 @@ export interface ProcessResult {
   width: number;
   height: number;
   bytes: number;
+  /** A size limit was set and this is the smallest the format could reach. */
+  overLimit?: boolean;
 }
 
 export interface SourceImageInfo extends Dimensions {
