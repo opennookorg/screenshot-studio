@@ -25,6 +25,7 @@ Screenshot Studio is a free, open-source, browser-based screenshot editor that t
 - Code to Image: https://www.screenshot-studio.com/code
 - Features: https://www.screenshot-studio.com/features
 - Screenshot Beautifier: https://www.screenshot-studio.com/features/screenshot-beautifier
+- Auto Beautify: https://www.screenshot-studio.com/features/auto-beautify
 - Social Media Graphics: https://www.screenshot-studio.com/features/social-media-graphics
 - Animation Maker: https://www.screenshot-studio.com/features/animation-maker
 - 3D Effects: https://www.screenshot-studio.com/features/3d-effects

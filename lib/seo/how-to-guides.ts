@@ -10,6 +10,10 @@ const BEAUTIFIER: GuideLink = {
   href: "/features/screenshot-beautifier",
   label: "Screenshot beautifier",
 };
+const AUTO_BEAUTIFY: GuideLink = {
+  href: "/features/auto-beautify",
+  label: "Auto beautify in one click",
+};
 const THREE_D: GuideLink = { href: "/features/3d-effects", label: "3D screenshot effects" };
 const ANIMATION: GuideLink = {
   href: "/features/animation-maker",
@@ -371,12 +375,17 @@ export const howToGuides: HowToGuide[] = [
       "screenshot background",
       "screenshot art",
       "pretty screenshot",
+      "beautify screenshot automatically",
     ],
     answer:
       "To make a screenshot look professional, give it breathing room and depth: place it on a gradient or wallpaper background, add padding, round the corners, and add a soft shadow. Use the Design and Background controls in Screenshot Studio to build your look.",
     cta: EDITOR_CTA,
     steps: [
       UPLOAD_STEP,
+      {
+        title: "Start with Beautify (optional)",
+        body: "Click Beautify next to Animate under the canvas. It builds a background, padding, corners, and shadow from your screenshot's own colours; click again for the next of six looks, or press Cmd+Z to undo. Then fine-tune with the steps below.",
+      },
       {
         title: "Pick a background",
         body: "In the BG tab, try Magic Gradients and press Shuffle until one fits, or pick a mesh, classic gradient, wallpaper, or solid color. Background Effects add grain or a subtle grid, dot, or line pattern.",
@@ -422,6 +431,10 @@ export const howToGuides: HowToGuide[] = [
         a: "A screenshot beautifier wraps a plain capture in a background, padding, rounded corners, and a shadow so it looks ready to publish. Screenshot Studio does this for free in the browser, and adds browser frames, device mockups, 3D, and animation.",
       },
       {
+        q: "Can a screenshot be beautified automatically?",
+        a: "Yes. Beautify reads your screenshot's colours in the browser and applies one of six matching looks, checked so the image stands out from the background. Each click moves to the next look, and each one is a single undo step.",
+      },
+      {
         q: "How many backgrounds are there?",
         a: "Magic Gradients alone has 100 options, plus 110 classic gradients, 12 mesh gradients, wallpaper collections, solid colors, and your own image or a transparent background.",
       },
@@ -431,7 +444,7 @@ export const howToGuides: HowToGuide[] = [
       },
       NO_WATERMARK_FAQ,
     ],
-    related: [BEAUTIFIER, SOCIAL, BROWSER_MOCKUPS, FREE_EDITOR],
+    related: [AUTO_BEAUTIFY, BEAUTIFIER, SOCIAL, BROWSER_MOCKUPS],
   },
   {
     kind: "how-to",

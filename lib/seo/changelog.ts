@@ -11,6 +11,27 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "November 15, 2026",
+    version: "2.11.0",
+    title: "Auto Beautify",
+    description:
+      "Style a screenshot in one click. Beautify reads your image's colours and gives it a matching background, padding, corners, and shadow. See /features/auto-beautify.",
+    changes: [
+      {
+        type: "added",
+        text: "Beautify button next to Animate: click again for the next of six looks, undo in one step",
+      },
+      {
+        type: "added",
+        text: "\"Suggested for your image\" previews at the top of the Templates drawer",
+      },
+      {
+        type: "added",
+        text: "Backgrounds are checked against your screenshot's edges, and dark screenshots get lighter looks first",
+      },
+    ],
+  },
+  {
     date: "November 7, 2026",
     version: "2.10.0",
     title: "Resize Templates",

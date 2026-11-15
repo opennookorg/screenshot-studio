@@ -23,6 +23,7 @@ const FEATURES = [
 
 const FEATURE_PAGES = [
   { href: "/features/screenshot-beautifier", label: "Screenshot beautifier" },
+  { href: "/features/auto-beautify", label: "Auto beautify" },
   { href: "/features/browser-mockups", label: "Browser mockups" },
   { href: "/features/3d-effects", label: "3D effects" },
   { href: "/features/animation-maker", label: "Animation maker" },
