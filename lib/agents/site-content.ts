@@ -44,6 +44,7 @@ export const AGENT_PAGES: AgentPage[] = [
       "Safari, Chrome, and Arc browser mockups in light and dark",
       "3D perspective transforms and fully configurable shadows",
       `${PRODUCT_FACTS.animationPresets} animation presets with a keyframe timeline and video export`,
+      "Auto Beautify: one click styles the screenshot from its own colours",
       "Import a tweet by URL and render it as an image",
       `Export up to ${PRODUCT_FACTS.maxExportScale}x resolution`,
     ],
@@ -142,6 +143,19 @@ export const AGENT_PAGES: AgentPage[] = [
     title: "Screenshot Beautifier - Screenshot Studio",
     summary:
       "Background, padding, corner radius, and shadow controls that turn a raw screenshot into a presentable graphic.",
+  },
+  {
+    path: "/features/auto-beautify",
+    title: "Auto Beautify Screenshots in One Click - Screenshot Studio",
+    summary:
+      "One-click styling: the editor reads the screenshot's colours in the browser and applies a matching gradient background, padding, corner radius, and shadow. Six looks are ranked for the image and cycled by clicking again. Each look is one undo step and leaves text, overlays, 3D, and animation unchanged.",
+    points: [
+      "Looks: Vivid, Curated, Duotone, Pastel, Midnight, Complement",
+      "Every background is checked for contrast against the screenshot's edges",
+      "Dark screenshots get lighter backgrounds first",
+      "Beautify button sits next to Animate under the canvas; suggestions appear in the Templates drawer",
+      "Colours are computed on the device, not by a server or AI service",
+    ],
   },
   {
     path: "/features/social-media-graphics",

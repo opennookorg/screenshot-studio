@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     "free screenshot editor",
     "online image editor",
     "screenshot beautifier online",
+    "auto beautify screenshot",
     "screenshot mockup tool",
     "pika style alternative",
     "shots.so alternative",

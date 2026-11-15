@@ -37,6 +37,7 @@ export const metadata: Metadata = {
     "mac window mockup screenshot",
     "browser frame screenshot tool",
     "gradient background screenshot maker",
+    "auto beautify screenshot",
   ],
   openGraph: {
     ...OG_DEFAULTS,
@@ -104,6 +105,11 @@ const faqs = [
       "Upload PNG, JPG, or WebP. Export as PNG or JPG, scaled up to 5x for retina-quality output.",
   },
   {
+    question: "Can it beautify a screenshot automatically?",
+    answer:
+      "Yes. Click Beautify next to Animate in the editor and it picks a background, padding, corners, and shadow from your screenshot's own colours. Click again for another look, or open Templates to compare six suggestions for your image.",
+  },
+  {
     question: "Does the beautifier add browser or device frames?",
     answer:
       "Yes. You can wrap your screenshot in a browser window or device frame from the same editor, then adjust the background, shadow, and padding together.",
@@ -121,6 +127,7 @@ const faqs = [
 ];
 
 const relatedLinks = [
+  { href: "/features/auto-beautify", label: "Auto beautify" },
   { href: "/features/browser-mockups", label: "Browser mockups" },
   { href: "/features/social-media-graphics", label: "Social media graphics" },
   { href: "/features/animation-maker", label: "Animation maker" },
@@ -144,6 +151,7 @@ const jsonLd = {
         "Custom shadows",
         "Rounded corners and padding",
         "Browser and device frames",
+        "One-click auto beautify from the screenshot's colours",
         `Export up to ${PRODUCT_FACTS.maxExportScale}x resolution`,
         "No signup required",
       ],

@@ -56,6 +56,7 @@ Screenshot Studio is a client-side image editor: imported images are not uploade
 - In-browser video compressor with quality levels or a target size in MB, MP4 output (${BASE_URL}/compress-video)
 - High-resolution export up to ${PRODUCT_FACTS.maxExportScale}x scale (PNG, JPEG, WebP)
 - One-click professional styling presets
+- Auto Beautify: one click builds a background, padding, corners, and shadow from the screenshot's own colours, computed in the browser (${BASE_URL}/features/auto-beautify)
 - Aspect ratio presets for every social platform
 
 ## Standalone Image Tools
@@ -79,6 +80,7 @@ ${primaryToolLines}
 - Compress Video: ${BASE_URL}/compress-video
 - Features: ${BASE_URL}/features
 - Screenshot Beautifier: ${BASE_URL}/features/screenshot-beautifier
+- Auto Beautify: ${BASE_URL}/features/auto-beautify
 - Social Media Graphics: ${BASE_URL}/features/social-media-graphics
 - Animation Maker: ${BASE_URL}/features/animation-maker
 - 3D Effects: ${BASE_URL}/features/3d-effects
@@ -248,6 +250,8 @@ Built as a free alternative to paid tools like Pika Style, Shots.so, and CleanSh
 
 ### Templates & Presets
 - One-click professional styling presets
+- Auto Beautify: six looks ranked for the uploaded screenshot (Vivid, Curated, Duotone, Pastel, Midnight, Complement); click again to cycle, one undo step each
+- "Suggested for your image" previews at the top of the Templates drawer
 - Aspect ratio presets: Auto, 1:1, 4:3, 16:9, 9:16, 4:5, 2:3, 3:2, 21:9
 - Social platform presets (Twitter, Instagram, LinkedIn, etc.)
 
@@ -287,6 +291,7 @@ Standalone, single-purpose utilities. Each decodes, processes, and re-encodes th
 |------|-----|-------------|
 | Features Hub | ${BASE_URL}/features | All features overview |
 | Screenshot Beautifier | ${BASE_URL}/features/screenshot-beautifier | Background and styling features |
+| Auto Beautify | ${BASE_URL}/features/auto-beautify | One-click styling from the screenshot's own colours |
 | Social Media Graphics | ${BASE_URL}/features/social-media-graphics | Social platform image creation |
 | Animation Maker | ${BASE_URL}/features/animation-maker | Animation timeline and video export |
 | 3D Effects | ${BASE_URL}/features/3d-effects | Perspective and depth effects |

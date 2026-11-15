@@ -19,6 +19,7 @@ const STATIC_PATHS = [
 
   "/features",
   "/features/screenshot-beautifier",
+  "/features/auto-beautify",
   "/features/social-media-graphics",
   "/features/animation-maker",
   "/features/3d-effects",

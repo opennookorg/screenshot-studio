@@ -9,6 +9,7 @@ import {
   Share08Icon,
   SmartPhone01Icon,
   SourceCodeIcon,
+  SparklesIcon,
   Video01Icon,
 } from "hugeicons-react";
 import { Navigation } from "@/components/landing/Navigation";
@@ -92,6 +93,14 @@ const FEATURES = [
       "Add backgrounds, shadows, and rounded corners to turn plain screenshots into professional visuals.",
     icon: MagicWand01Icon,
     gradient: gradientColors.vibrant_orange_pink,
+  },
+  {
+    href: "/features/auto-beautify",
+    title: "Auto Beautify",
+    description:
+      "One click styles your screenshot with a background built from its own colours. Click again for another look.",
+    icon: SparklesIcon,
+    gradient: gradientColors.cyan_blue_purple,
   },
   {
     href: "/features/social-media-graphics",

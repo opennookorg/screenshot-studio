@@ -66,7 +66,7 @@ const defaultFAQs: FAQItem[] = [
   {
     question: "What makes Screenshot Studio different from other screenshot editors?",
     answer:
-      `It is purpose-built for making screenshots presentable rather than for general image editing: one-click design presets, ${atLeast(PRODUCT_FACTS.backgrounds)} backgrounds, ${PRODUCT_FACTS.deviceMockups} device mockups, 3D perspective transforms, an animation timeline, and video export. All of it is free, watermark-free, and needs no account.`,
+      `It is purpose-built for making screenshots presentable rather than for general image editing: one-click Auto Beautify that styles a screenshot from its own colours, design presets, ${atLeast(PRODUCT_FACTS.backgrounds)} backgrounds, ${PRODUCT_FACTS.deviceMockups} device mockups, 3D perspective transforms, an animation timeline, and video export. All of it is free, watermark-free, and needs no account.`,
   },
   {
     question: "Is my data stored on your servers?",
