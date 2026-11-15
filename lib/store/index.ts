@@ -11,6 +11,7 @@ import { BackgroundConfig, BackgroundType } from "@/lib/constants/backgrounds";
 import { gradientColors } from "@/lib/constants/gradient-colors";
 import { solidColors } from "@/lib/constants/solid-colors";
 import type { DeviceLayoutId, Mockup } from "@/types/mockup";
+import type { BeautifyStyle } from "@/lib/auto-beautify/recipes";
 import { getDeviceLayout, MAX_DEVICE_MOCKUPS } from "@/lib/constants/mockups";
 import {
   applyLayoutToMockups,
@@ -661,6 +662,12 @@ export interface ImageState {
     },
   ) => void;
   applyAnimatedTemplate: (templateId: string) => void;
+  /**
+   * Apply an auto-beautify look as one undo step. Only touches the look
+   * (background, padding, corners, shadow, canvas size) — never text,
+   * overlays, 3D, animation or mockups.
+   */
+  applyAutoBeautify: (style: BeautifyStyle, options?: { backgroundOnly?: boolean }) => void;
   setPerspective3D: (perspective: Partial<ImageState["perspective3D"]>) => void;
   setImageFilter: (key: keyof ImageFilters, value: number) => void;
   resetImageFilters: () => void;
@@ -1414,6 +1421,31 @@ export const useImageStore = create<ImageState>()(
       set({
         shadowPreset: preset,
         imageShadow: shadowMap[preset],
+      });
+    },
+
+    applyAutoBeautify: (style, options = {}) => {
+      // A single set() keeps the whole look to one zundo history entry.
+      set((state) => {
+        const background = {
+          backgroundConfig: style.backgroundConfig,
+          // Blur smears gradient edges; generated looks are designed unblurred.
+          backgroundBlur: 0,
+        };
+        // Device scenes position frames themselves; padding, corners and canvas
+        // shape belong to that layout, so only the backdrop changes.
+        if (options.backgroundOnly) return background;
+
+        return {
+          ...background,
+          borderRadius: style.borderRadius,
+          imageScale: style.imageScale,
+          imageShadow: style.imageShadow,
+          shadowPreset: style.shadowPreset,
+          ...(style.aspectRatio && !state.customDimensions
+            ? { selectedAspectRatio: style.aspectRatio }
+            : {}),
+        };
       });
     },
 

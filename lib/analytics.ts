@@ -118,6 +118,15 @@ export function trackPresetApply(presetId: string, presetName: string): void {
   trackEvent('preset_apply', { preset_id: presetId, preset_name: presetName.substring(0, 50) });
 }
 
+/** `index` is the look's rank; high values mean users shuffled past the first pick. */
+export function trackAutoBeautify(
+  recipe: string,
+  index: number,
+  source: 'header' | 'suggested',
+): void {
+  trackEvent('auto_beautify', { recipe, index, source });
+}
+
 export function trackOverlayAdd(overlayType: 'text' | 'image' | 'sticker'): void {
   trackEvent('overlay_add', { overlay_type: overlayType });
 }
