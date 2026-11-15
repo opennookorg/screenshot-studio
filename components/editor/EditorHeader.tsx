@@ -37,6 +37,7 @@ import { useEditorStore, useImageStore } from "@/lib/store";
 import { useExport } from "@/hooks/useExport";
 import { shouldIgnoreEditorShortcut } from "@/lib/editor-shortcuts";
 import { KeyboardShortcutsDialog } from "@/components/canvas/dialogs/KeyboardShortcutsDialog";
+import { BeautifyButton } from "@/components/editor/BeautifyButton";
 import { useBatchExport } from "@/hooks/useBatchExport";
 import { aspectRatios } from "@/lib/constants/aspect-ratios";
 import { AspectRatioPicker } from "@/components/aspect-ratio/aspect-ratio-picker";
@@ -241,6 +242,8 @@ export function EditorHeader() {
             isMobile ? "gap-1" : "gap-1 xl:gap-2.5"
           )}
         >
+          {hasImage && isMobile ? <BeautifyButton compact /> : null}
+
           {showHistoryControls ? (
             <div className="flex items-center gap-1">
               <button

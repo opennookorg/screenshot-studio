@@ -13,6 +13,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useHasOpened } from "@/hooks/useHasOpened";
 import { MobileDrawer } from "@/components/ui/responsive-popover";
 import { Button } from "@/components/ui/button";
+import { BeautifyButton } from "@/components/editor/BeautifyButton";
 import { Settings02Icon, Upload01Icon, VideoReplayIcon, MagicWand01Icon } from "hugeicons-react";
 import { useAutosaveDraft } from "@/hooks/useAutosaveDraft";
 import { TimelineEditor } from "@/components/timeline";
@@ -175,23 +176,25 @@ function EditorMain() {
               <TemplateMediaPrompt />
 
               {hasContent && !showTimeline && !isMobile && (
-                <button
-                  type="button"
-                  onClick={toggleTimeline}
-                  className={cn(
-                    'absolute bottom-3 left-1/2 z-20 -translate-x-1/2',
-                    'inline-flex h-9 cursor-pointer items-center gap-2 rounded-md px-4',
-                    'bg-card text-sm font-medium text-foreground',
-                    'border border-foreground/10',
-                    'shadow-lg',
-                    'transition-all duration-150 ease-out',
-                    'hover:bg-muted hover:border-foreground/15',
-                    'active:scale-[0.98]'
-                  )}
-                >
-                  <VideoReplayIcon size={15} className="text-foreground" />
-                  <span>Animate</span>
-                </button>
+                <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
+                  <BeautifyButton chip />
+                  <button
+                    type="button"
+                    onClick={toggleTimeline}
+                    className={cn(
+                      'inline-flex h-9 cursor-pointer items-center gap-2 rounded-md px-4',
+                      'bg-card text-sm font-medium text-foreground',
+                      'border border-foreground/10',
+                      'shadow-lg',
+                      'transition-all duration-150 ease-out',
+                      'hover:bg-muted hover:border-foreground/15',
+                      'active:scale-[0.98]'
+                    )}
+                  >
+                    <VideoReplayIcon size={15} className="text-foreground" />
+                    <span>Animate</span>
+                  </button>
+                </div>
               )}
             </div>
           </div>

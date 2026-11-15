@@ -23,6 +23,7 @@ import {
   AnimatedTemplatePreview,
 } from './AnimatedTemplateGallery';
 import { ImageTemplateGallery, ImageTemplatePreview } from './ImageTemplateGallery';
+import { SuggestedLooks } from './SuggestedLooks';
 import type { AnimatedTemplate } from '@/lib/animation/templates';
 import { getPresetById as getVisualPresetById } from '@/lib/constants/presets';
 import { getAspectRatioPreset } from '@/lib/aspect-ratio-utils';
@@ -305,6 +306,10 @@ export function TemplateLibraryDrawer() {
               </div>
 
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain scrollbar-hide">
+                {/* Above every filter: generated looks are the fastest path to a good result. */}
+                <div className="px-5 pt-5 empty:hidden">
+                  <SuggestedLooks />
+                </div>
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={filter}
